@@ -1,4 +1,4 @@
-import { GameBase } from "./GameBase.js";
+import { GameBase } from "./GameBase";
 
 export class Game extends GameBase {
     private pieceHexaColor: string[] = [];

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './canvas.css';
-import { Game } from '../../Utils/Game/Game';
-import BobailGame, { Position } from '../../Utils/Bobail/BobailGame';
+import { Game } from '../../utils/Game/Game';
+import BobailGame, { Position } from '../../utils/Bobail/BobailGame';
 import Swal from 'sweetalert2';
 
 const Canvas = () => {
