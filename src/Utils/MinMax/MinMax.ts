@@ -44,6 +44,8 @@ export default class MinMaxAlgorithm {
                 bestMove = child;
             }
         }
+        console.log("BEST EVAL", bestEval);
+        
         return bestMove;
     }
 
@@ -57,7 +59,7 @@ export default class MinMaxAlgorithm {
      */
     private minimax(state: Cell[][], depth: number, alpha: number, beta: number, player: Player): number {
         const hash = this.strategy.getHash(state, player);
-        if (this.transpositionTable.has(hash)) {
+        if (this.transpositionTable.has(hash)) {           
             return this.transpositionTable.get(hash)!;
         }
 

@@ -7,14 +7,20 @@ export default class BobailAlgorithmImplementation implements GameStrategy {
     bobailService: BobailService;
 
     constructor() {
-        this.minMax = new MinMaxAlgorithm(this, 3);
+        const depth = 6;
+        console.log("Depth max = ", depth);
+        
+        this.minMax = new MinMaxAlgorithm(this, depth);
         this.bobailService = new BobailService();
     }
 
     findBestMove(gamePosition: Cell[][], currentPlayer: Player): Cell[][] | null  {
-        console.log(this.generateChildren(gamePosition, currentPlayer));
+        const startTime = performance.now();
+        const bestMove = this.minMax.findBestMove(gamePosition, currentPlayer);
+        const endTime = performance.now();
+        console.log(`Execution time: ${endTime - startTime} ms`);
         
-        return this.minMax.findBestMove(gamePosition, currentPlayer);
+        return bestMove;
     }
 
     evaluateState(grid: Cell[][], currentPlayer: Player): number {
@@ -25,24 +31,38 @@ export default class BobailAlgorithmImplementation implements GameStrategy {
         let score = 0;
         
         // Bobail advance (closer to own side is better)
-        // score += (currentPlayer === 1 ? bobailPosition.y : (4 - bobailPosition.y)) * 10;
+        score += [-1000, -50, 0, 50, 1000][bobailPosition.y]
 
-        score += [
-            [-1000, -20, 0, 20, 1000],
-            [1000, 20, 0, -20, -1000],
-        ]
-        [currentPlayer-1][bobailPosition.y]
+        // Piece advance
+        const playerPositions = this.bobailService.getPlayerPositions(grid, currentPlayer);
+        const pieceStrategyPlayer = [
+            [2, 2, 0, -2, -2],
+            [2, 3, 0, -3, -2],
+            [2, 3, 0, -3, -2],
+            [2, 3, 0, -3, -2],
+            [2, 2, 0, -2, -2]
+        ];
+
+        for (const pos of playerPositions) {
+            score += pieceStrategyPlayer[pos.x][pos.y] * 2;
+        }
         
-        // // Count free moves for each piece
-        // const playerPositions = this.bobailService.getPlayerPositions(grid, currentPlayer);
-        // for (const pos of playerPositions) {
-        //     score += this.bobailService.getLinearMoves(grid, pos).length * 5;
-        // }
+        // Count free moves for each piece
+        let nbCombination = 0;
+        for (const pos of playerPositions) {
+            nbCombination += this.bobailService.getLinearMoves(grid, pos).length;
+        }
+                
+        score += (currentPlayer === 1 ? nbCombination : -nbCombination) / 4;
         
-        // // Bobail neighbors (control around it)
-        // const bobailNeighbors = this.bobailService.getAdjacentPositions(bobailPosition);
-        // score += bobailNeighbors.filter(pos => this.bobailService.getPieceAt(grid, pos) === currentPlayer).length * 10;
-        // score -= bobailNeighbors.filter(pos => this.bobailService.getPieceAt(grid, pos) === opponent).length * 10;
+        // Bobail neighbors (control around it)
+        if(this.bobailService.isWithinBounds({x: bobailPosition.x-1, y: bobailPosition.y+1}) && grid[bobailPosition.x-1][bobailPosition.y+1] !== 0) score -= 10;
+        if(this.bobailService.isWithinBounds({x: bobailPosition.x, y: bobailPosition.y+1}) && grid[bobailPosition.x][bobailPosition.y+1] !== 0) score -= 10;
+        if(this.bobailService.isWithinBounds({x: bobailPosition.x+1, y: bobailPosition.y+1}) && grid[bobailPosition.x+1][bobailPosition.y+1] !== 0) score -= 10;
+
+        if(this.bobailService.isWithinBounds({x: bobailPosition.x-1, y: bobailPosition.y-1}) && grid[bobailPosition.x-1][bobailPosition.y-1] !== 0) score += 10;
+        if(this.bobailService.isWithinBounds({x: bobailPosition.x, y: bobailPosition.y-1}) && grid[bobailPosition.x][bobailPosition.y-1] !== 0) score += 10;
+        if(this.bobailService.isWithinBounds({x: bobailPosition.x+1, y: bobailPosition.y-1}) && grid[bobailPosition.x+1][bobailPosition.y-1] !== 0) score += 10;
 
         // If game over, give max or min score
         // if (this.bobailService.isGameOver(grid)) {///////////////////////////////////////////////
@@ -59,7 +79,9 @@ export default class BobailAlgorithmImplementation implements GameStrategy {
         if (!bobailPosition) throw new Error("Bobail is missing from the grid");
 
         // Generate all possible Bobail moves
-        const bobailMoves = this.bobailService.getAdjacentPositions(bobailPosition).filter(pos => this.bobailService.getPieceAt(grid, pos) === 0);
+        const bobailMoves = this.bobailService.getAdjacentPositions(bobailPosition)
+            .filter(pos => this.bobailService.getPieceAt(grid, pos) === 0)
+            .sort((a, b) => currentPlayer === 1 ? a.y - b.y : b.y - a.y);               // Basic heuristic
         
         for (const bobailMove of bobailMoves) {
             const newGridBobail = grid.map(row => [...row]);
