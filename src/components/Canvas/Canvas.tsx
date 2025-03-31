@@ -44,25 +44,39 @@ const Canvas = forwardRef(({ }, ref) => {
             const grid = bobailGame.getBoard();
             game = new Game(canvaRef.current, grid);
 
+            // Use for the move logic
+            let firstMove: {x: number, y: number} | null = null;
+
             game.onCellClicked = (x: number, y: number) => {
                 const grid = bobailGame.getBoard();
-                const origin = {x, y};
+                const cellSelected = {x, y};
 
                 if (grid[x][y] === bobailGame.getCurrentPlayer() && bobailGame.getBobailMoved()) {
+                    firstMove = cellSelected;
                     const availablePositions = bobailGame.getAvailablePieceMoves({x, y});
 
                     if (availablePositions && availablePositions.length) {
-                        game.drawFlagGrid({ origin, flagPositions: availablePositions, value: 1 });
+                        game.drawFlagGrid({ origin: cellSelected, flagPositions: availablePositions, value: 1 });
                     }
                 }
                 else if (grid[x][y] === 3 && !bobailGame.getBobailMoved()) {
+                    firstMove = cellSelected;
                     const availablePositions = bobailGame.getAvailableBobailMoves({x, y});
 
                     if (availablePositions && availablePositions.length) {
-                        game.drawFlagGrid({ origin, flagPositions: availablePositions, value: 1 });
+                        game.drawFlagGrid({ origin: cellSelected, flagPositions: availablePositions, value: 1 });
                     }
                 }
-                else {
+                else if (grid[x][y] === 0) {                    
+                    if(firstMove){
+                        if(bobailGame.getBobailMoved()) {
+                            bobailGame.movePiece(firstMove, cellSelected);
+                        }
+                        else {
+                            bobailGame.moveBobail(cellSelected);
+                        }
+                        firstMove = null;
+                    }
                     game.resetFlagGrid();
                 }
             }

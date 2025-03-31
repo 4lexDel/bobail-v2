@@ -57,17 +57,17 @@ export default class BobailGame {
         return null;
     }
 
-    private getPlayerPositions(player: Player): Position[] {
-        const positions: Position[] = [];
-        for (let x = 0; x < 5; x++) {
-            for (let y = 0; y < 5; y++) {
-                if (this.board[x][y] === player) {
-                    positions.push({ x, y });
-                }
-            }
-        }
-        return positions;
-    }
+    // private getPlayerPositions(player: Player): Position[] {
+    //     const positions: Position[] = [];
+    //     for (let x = 0; x < 5; x++) {
+    //         for (let y = 0; y < 5; y++) {
+    //             if (this.board[x][y] === player) {
+    //                 positions.push({ x, y });
+    //             }
+    //         }
+    //     }
+    //     return positions;
+    // }
 
     private getAdjacentPositions(position: Position): Position[] {
         const directions = [
@@ -127,7 +127,8 @@ export default class BobailGame {
 
         this.setPieceAt(bobailPosition, 0);
         this.setPieceAt(to, 3);
-        this.switchPlayer();
+        this.bobailMoved = !this.bobailMoved;
+
         return true;
     }
 
@@ -146,6 +147,8 @@ export default class BobailGame {
         this.setPieceAt(from, 0);
         this.setPieceAt(to, this.currentPlayer);
         this.switchPlayer();
+        this.bobailMoved = !this.bobailMoved;
+
         return true;
     }
 

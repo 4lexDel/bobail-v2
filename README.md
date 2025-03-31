@@ -17,3 +17,9 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 ## Advancment
 - Architecture set
 - Beginning of the interface
+
+
+## TODO
+- Add hover on the grid
+- Add a tutorial modal
+- AI
