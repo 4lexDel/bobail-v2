@@ -3,7 +3,6 @@ import './canvas.css';
 import { Game } from '../../utils/Game/Game';
 import BobailGame, { Position } from '../../utils/Bobail/BobailGame';
 import Swal from 'sweetalert2';
-import BobailAlgorithmImplementation from '../../utils/Bobail/BobailAiImplementation';
 
 const Canvas = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -12,9 +11,6 @@ const Canvas = () => {
 
     const bobailGame = new BobailGame();
     let game: Game;
-
-    const bobailAlgorithm = new BobailAlgorithmImplementation();
-
     let firstMove: Position | null = null;
     let timeoutId: number;
 
@@ -70,14 +66,6 @@ const Canvas = () => {
         if (bobailGame.getBobailMoved() && firstMove) {
             if (bobailGame.movePiece(firstMove, cellSelected)) {
                 setBackgroundColor(bobailGame.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
-
-                const nextState = bobailAlgorithm.findBestMove(bobailGame.getGrid(), bobailGame.getCurrentPlayer());
-                console.log(nextState);
-                if(nextState) {
-                    bobailGame.setGrid(nextState);
-                    game.setGrid(nextState);
-                    bobailGame.switchPlayer();
-                }
             }
         } else {
             bobailGame.moveBobail(cellSelected);

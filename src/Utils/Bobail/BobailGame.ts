@@ -35,6 +35,10 @@ export default class BobailGame {
         return this.grid;
     }
 
+    public setGrid(grid: Cell[][]) {
+        this.grid = grid;
+    }
+
     public getCurrentPlayer() {
         return this.currentPlayer;
     }
@@ -73,18 +77,6 @@ export default class BobailGame {
         }
         return null;
     }
-
-    // private getPlayerPositions(player: Player): Position[] {
-    //     const positions: Position[] = [];
-    //     for (let x = 0; x < 5; x++) {
-    //         for (let y = 0; y < 5; y++) {
-    //             if (this.grid[x][y] === player) {
-    //                 positions.push({ x, y });
-    //             }
-    //         }
-    //     }
-    //     return positions;
-    // }
 
     private getAdjacentPositions(position: Position): Position[] {
         const directions = [
@@ -173,7 +165,7 @@ export default class BobailGame {
         return true;
     }
 
-    private switchPlayer(): void {
+    public switchPlayer(): void {
         this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
     }
 
@@ -190,9 +182,5 @@ export default class BobailGame {
         
         // Stuck winning condition : no adjacent case => other player win
         if(!adjacentPositions.length) this.winner = this.currentPlayer === 1 ? 2 : 1;
-    }
-
-    public printGrid(): void {
-        console.log(this.grid.map(row => row.map(cell => cell ?? '.').join(' ')).join('\n'));
     }
 }
