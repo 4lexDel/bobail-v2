@@ -7,7 +7,7 @@ export class Game extends GameBase {
 
     private flagGrid: number[][] = Array.from({ length: 5 }, () => Array(5).fill(0));
 
-    public onCellClicked = (x: number, y: number) => {};
+    public onCellClicked = (x: number, y: number) => {return {x, y}};
 
     public constructor(canvas: HTMLCanvasElement, grid: number[][]) {
         super(canvas, grid);
@@ -48,10 +48,10 @@ export class Game extends GameBase {
     }
 
     private initEvent(): void {
-        this.onMouseDown((e: MouseEvent) => this.mouseAction(e));
+        this.onMouseDown(() => this.mouseAction()); // e: MouseEvent
     }
 
-    private mouseAction(e: MouseEvent): void {
+    private mouseAction(): void {   // e: MouseEvent
         let x = Math.floor((this.mouseX - this.mx) / this.d);
         let y = Math.floor((this.mouseY - this.my) / this.d);
 
@@ -59,10 +59,11 @@ export class Game extends GameBase {
             return;
         }
 
-        this.updateCell(x, y, e.button);
+        // this.updateCell(x, y, e.button);
+        this.updateCell(x, y);
     }
 
-    private updateCell(x: number, y: number, eventType: number = 0): void {
+    private updateCell(x: number, y: number): void { //eventType: number = 0
         // if (eventType === 0){
         //     this.grid[x][y] = (this.grid[x][y] + 1) % 4;
         //     // if(this.grid[x][y] == 2) this.grid[x][y] = 1;

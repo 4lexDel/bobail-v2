@@ -1,9 +1,9 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import './canvas.css'
 import { Game } from '../../Utils/Game/Game';
 import BobailGame from '../../Utils/Bobail/BobailGame';
 
-const Canvas = forwardRef(({ }, ref) => {
+const Canvas = forwardRef(({ }) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const canvaRef = useRef(null);
 
@@ -16,7 +16,7 @@ const Canvas = forwardRef(({ }, ref) => {
 
         gameLogic();
 
-        const observerCallback = (entries: any) => {
+        const observerCallback = () => {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
                 window.requestAnimationFrame(() => {
