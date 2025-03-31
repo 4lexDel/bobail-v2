@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import './canvas.css'
-import { Game } from '../../Utils/Game/game';
+import { Game } from '../../Utils/Game/Game';
 import BobailGame from '../../Utils/Bobail/BobailGame';
 
 const Canvas = forwardRef(({ }, ref) => {

@@ -5,7 +5,6 @@ export class Game extends GameBase {
     private flagHexaColor: string[] = [];
     private colorBackground: string = "rgb(200, 200, 200)";
 
-    private grid: number[][];
     private flagGrid: number[][] = Array.from({ length: 5 }, () => Array(5).fill(0));
 
     public onCellClicked = (x: number, y: number) => {};
@@ -30,7 +29,7 @@ export class Game extends GameBase {
             "#99abc2", // grey
         ];
         this.flagHexaColor = [
-            "#fffd93",
+            "#ff9a4f",
             "#ff93c2",
         ];
 

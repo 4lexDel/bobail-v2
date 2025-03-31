@@ -156,7 +156,7 @@ export default class BobailGame {
     }
 
     private switchPlayer(): void {
-        this.currentPlayer = this.currentPlayer === 'Joueur1' ? 'Joueur2' : 'Joueur1';
+        this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
     }
 
     public printBoard(): void {
