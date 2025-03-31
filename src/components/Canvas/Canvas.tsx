@@ -46,20 +46,24 @@ const Canvas = forwardRef(({ }, ref) => {
 
             game.onCellClicked = (x: number, y: number) => {
                 const grid = bobailGame.getBoard();
+                const origin = {x, y};
 
-                if(grid[x][y] === bobailGame.getCurrentPlayer()) {
-                    const availableMoves = bobailGame.getAvailableMoves().pieceMoves
-                        .find((move) => move.from.x === x && move.from.y === y);
+                if (grid[x][y] === bobailGame.getCurrentPlayer() && bobailGame.getBobailMoved()) {
+                    const availablePositions = bobailGame.getAvailablePieceMoves({x, y});
 
-                    const origin = availableMoves?.from;
-                    const availablePositions = availableMoves?.to;
-
-                    console.log(bobailGame.getAvailableMoves().pieceMoves.find((move) => move.from.x === x && move.from.y === y));
-
-                    if(availablePositions && availablePositions.length) {
-                        game.drawFlagGrid({origin, flagPositions: availablePositions, value: 1});
-                        console.log("oui");
+                    if (availablePositions && availablePositions.length) {
+                        game.drawFlagGrid({ origin, flagPositions: availablePositions, value: 1 });
                     }
+                }
+                else if (grid[x][y] === 3 && !bobailGame.getBobailMoved()) {
+                    const availablePositions = bobailGame.getAvailableBobailMoves({x, y});
+
+                    if (availablePositions && availablePositions.length) {
+                        game.drawFlagGrid({ origin, flagPositions: availablePositions, value: 1 });
+                    }
+                }
+                else {
+                    game.resetFlagGrid();
                 }
             }
         }
@@ -69,11 +73,11 @@ const Canvas = forwardRef(({ }, ref) => {
     //     changePattern, solve, resetWorker
     // }), [game]);
 
-  return (
-    <div ref={containerRef} className='canvas-container'>
-        <canvas ref={canvaRef} className='canvas'></canvas>
-    </div>
-  )
+    return (
+        <div ref={containerRef} className='canvas-container'>
+            <canvas ref={canvaRef} className='canvas'></canvas>
+        </div>
+    )
 });
 
 export default Canvas;

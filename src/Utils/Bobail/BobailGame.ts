@@ -97,25 +97,19 @@ export default class BobailGame {
                 y += dir.y;
                 pathSearched = true;
             }
-            pathSearched && moves.push({ x: x-dir.x, y: y-dir.y });
+            pathSearched && moves.push({ x: x - dir.x, y: y - dir.y });
         }
         return moves;
     }
 
-    public getAvailableMoves(): { bobailMoves: Position[], pieceMoves: { from: Position, to: Position[] }[] } {
-        const bobailPosition = this.getBobailPosition();
-        if (!bobailPosition) {
-            throw new Error('Bobail introuvable sur le plateau.');
-        }
+    public getAvailableBobailMoves(origin: {x: number, y: number}): Position[] | null {
+        if (this.getPieceAt(origin) !== 3) return null;
+        return this.getAdjacentPositions(origin).filter(pos => this.getPieceAt(pos) === 0);
+    }
 
-        const bobailMoves = this.getAdjacentPositions(bobailPosition).filter(pos => this.getPieceAt(pos) === 0);
-
-        const pieceMoves = this.getPlayerPositions(this.currentPlayer).map(pos => ({
-            from: pos,
-            to: this.getLinearMoves(pos),
-        }));
-
-        return { bobailMoves, pieceMoves };
+    public getAvailablePieceMoves(origin: {x: number, y: number}): Position[] | null {
+        if (this.getPieceAt(origin) !== this.currentPlayer) return null;
+        return this.getLinearMoves(origin);
     }
 
     public moveBobail(to: Position): boolean {

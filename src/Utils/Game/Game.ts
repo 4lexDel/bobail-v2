@@ -18,6 +18,7 @@ export class Game extends GameBase {
 
     private resetFlagGrid(): void {
         this.flagGrid = Array.from({ length: 5 }, () => Array(5).fill(0));
+        this.isRenderNeed = true;
     } 
 
     private init(grid: number[][]): void {
