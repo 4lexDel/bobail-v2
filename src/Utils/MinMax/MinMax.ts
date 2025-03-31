@@ -71,7 +71,7 @@ export default class MinMaxAlgorithm {
         let value: number;
         if (player === 1) {
             value = -Infinity;
-            for (const child of this.strategy.generateChildren(state, player)) {
+            for (const child of this.strategy.generateChildren(state, 2)) {
                 const childEval = this.minimax(child, depth - 1, alpha, beta, 2);
                 value = Math.max(value, childEval);
                 alpha = Math.max(alpha, value);
@@ -79,7 +79,7 @@ export default class MinMaxAlgorithm {
             }
         } else {
             value = Infinity;
-            for (const child of this.strategy.generateChildren(state, player)) {
+            for (const child of this.strategy.generateChildren(state, 1)) {
                 const childEval = this.minimax(child, depth - 1, alpha, beta, 1);
                 value = Math.min(value, childEval);
                 beta = Math.min(beta, value);
