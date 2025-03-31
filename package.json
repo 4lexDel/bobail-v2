@@ -1,5 +1,6 @@
 {
-  "name": "vite-react-typescript-starter",
+  "homepage": "https://4lexdel.github.io/bobail-v2/",
+  "name": "bobail-v2",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,11 +8,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -b gh-pages -d dist"
   },
   "dependencies": {
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "gh-pages": "^2.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
