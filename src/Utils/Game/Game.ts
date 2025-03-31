@@ -3,7 +3,7 @@ import { GameBase } from "./GameBase.js";
 export class Game extends GameBase {
     private pieceHexaColor: string[] = [];
     private flagHexaColor: string[] = [];
-    private colorBackground: string = "rgb(200, 200, 200)";
+    private colorBackground: string = "rgb(120, 120, 120)";
 
     private flagGrid: number[][] = Array.from({ length: 5 }, () => Array(5).fill(0));
 
@@ -29,8 +29,8 @@ export class Game extends GameBase {
             "#99abc2", // grey
         ];
         this.flagHexaColor = [
-            "#ff9a4f",
-            "#ff93c2",
+            "#cbcbcb", // Move available
+            "#ffcc4f", // Piece selected
         ];
 
         this.grid = grid;
@@ -117,12 +117,13 @@ export class Game extends GameBase {
     }
 
     private displayCell(x: number, y: number): void {
-        this.ctx.fillStyle = this.colorBackground;
-        this.ctx.fillRect(this.mx + x * this.d, this.my + y * this.d, this.d, this.d);
-        this.displayCellBorder(this.mx + x * this.d, this.my + y * this.d, this.d);
-
         if (this.flagGrid[x][y] !== 0) {
-            this.ctx.fillStyle = this.flagHexaColor[this.flagGrid[x][y] - 1] + "80";
+            this.ctx.fillStyle = this.flagHexaColor[this.flagGrid[x][y] - 1];
+            this.ctx.fillRect(this.mx + x * this.d, this.my + y * this.d, this.d, this.d);
+            this.displayCellBorder(this.mx + x * this.d, this.my + y * this.d, this.d);
+        }
+        else {
+            this.ctx.fillStyle = this.colorBackground;
             this.ctx.fillRect(this.mx + x * this.d, this.my + y * this.d, this.d, this.d);
             this.displayCellBorder(this.mx + x * this.d, this.my + y * this.d, this.d);
         }
