@@ -20,6 +20,9 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 
 
 ## TODO
+- Free flag on right click
+- Display previous move(s)
+- Animation (mouvement des pièces)
 - Add hover on the grid
 - Add a tutorial modal
 - AI

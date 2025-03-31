@@ -1,29 +1,38 @@
-type Player = 1 | 2;
-type Cell = 0 | Player | 3;
-type Position = { x: number; y: number };
+export type Player = 1 | 2;
+export type Cell = 0 | Player | 3;
+export type Position = { x: number; y: number };
 
 export default class BobailGame {
-    private board: Cell[][];
-    private currentPlayer: Player;
+    private grid!: Cell[][];
+    private currentPlayer!: Player;
     private bobailMoved = true;
 
+    private winner: Player | null = null;
+
     constructor() {
-        this.board = this.initializeBoard();
+        this.initGame();
+    }
+
+    public initGame(): void {
+        this.grid = this.initializeGrid();
         this.currentPlayer = 1;
+
+        this.bobailMoved = true;
+        this.winner = null;
     }
 
-    private initializeBoard(): Cell[][] {
-        const board: Cell[][] = Array.from({ length: 5 }, () => Array(5).fill(0));
+    private initializeGrid(): Cell[][] {
+        const grid: Cell[][] = Array.from({ length: 5 }, () => Array(5).fill(0));
         for (let i = 0; i < 5; i++) {
-            board[i][0] = 2;
-            board[i][4] = 1;
+            grid[i][0] = 2;
+            grid[i][4] = 1;
         }
-        board[2][2] = 3;
-        return board;
+        grid[2][2] = 3;
+        return grid;
     }
 
-    public getBoard() {
-        return this.board;
+    public getGrid() {
+        return this.grid;
     }
 
     public getCurrentPlayer() {
@@ -34,22 +43,30 @@ export default class BobailGame {
         return this.bobailMoved;
     }
 
+    public getWinner() {
+        return this.winner;
+    }
+
+    public isGameOver() {
+        return this.winner !== null;
+    }
+
     private isWithinBounds(position: Position): boolean {
         return position.x >= 0 && position.x < 5 && position.y >= 0 && position.y < 5;
     }
 
     private getPieceAt(position: Position): Cell {
-        return this.board[position.x][position.y];
+        return this.grid[position.x][position.y];
     }
 
     private setPieceAt(position: Position, piece: Cell): void {
-        this.board[position.x][position.y] = piece;
+        this.grid[position.x][position.y] = piece;
     }
 
     private getBobailPosition(): Position | null {
         for (let x = 0; x < 5; x++) {
             for (let y = 0; y < 5; y++) {
-                if (this.board[x][y] === 3) {
+                if (this.grid[x][y] === 3) {
                     return { x, y };
                 }
             }
@@ -61,7 +78,7 @@ export default class BobailGame {
     //     const positions: Position[] = [];
     //     for (let x = 0; x < 5; x++) {
     //         for (let y = 0; y < 5; y++) {
-    //             if (this.board[x][y] === player) {
+    //             if (this.grid[x][y] === player) {
     //                 positions.push({ x, y });
     //             }
     //         }
@@ -102,13 +119,13 @@ export default class BobailGame {
         return moves;
     }
 
-    public getAvailableBobailMoves(origin: {x: number, y: number}): Position[] | null {
-        if (this.getPieceAt(origin) !== 3) return null;
+    public getAvailableBobailMoves(origin: {x: number, y: number}): Position[] {
+        if (this.getPieceAt(origin) !== 3) return [];
         return this.getAdjacentPositions(origin).filter(pos => this.getPieceAt(pos) === 0);
     }
 
-    public getAvailablePieceMoves(origin: {x: number, y: number}): Position[] | null {
-        if (this.getPieceAt(origin) !== this.currentPlayer) return null;
+    public getAvailablePieceMoves(origin: {x: number, y: number}): Position[] {
+        if (this.getPieceAt(origin) !== this.currentPlayer) return [];
         return this.getLinearMoves(origin);
     }
 
@@ -128,6 +145,8 @@ export default class BobailGame {
         this.setPieceAt(bobailPosition, 0);
         this.setPieceAt(to, 3);
         this.bobailMoved = !this.bobailMoved;
+
+        this.checkGameOver();
 
         return true;
     }
@@ -149,6 +168,8 @@ export default class BobailGame {
         this.switchPlayer();
         this.bobailMoved = !this.bobailMoved;
 
+        this.checkGameOver();
+
         return true;
     }
 
@@ -156,7 +177,22 @@ export default class BobailGame {
         this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
     }
 
-    public printBoard(): void {
-        console.log(this.board.map(row => row.map(cell => cell ?? '.').join(' ')).join('\n'));
+    private checkGameOver(): void {
+        const bobailPosition = this.getBobailPosition();
+
+        if(!bobailPosition) throw new Error("Bobail required on the grid");
+
+        // Edge winning condition
+        if(bobailPosition.y === 4) this.winner = 1;
+        else if(bobailPosition.y === 0) this.winner = 2;
+
+        const adjacentPositions = this.getAdjacentPositions(bobailPosition).filter((pos) => this.getPieceAt(pos) === 0)
+        
+        // Stuck winning condition : no adjacent case => other player win
+        if(!adjacentPositions.length) this.winner = this.currentPlayer === 1 ? 2 : 1;
+    }
+
+    public printGrid(): void {
+        console.log(this.grid.map(row => row.map(cell => cell ?? '.').join(' ')).join('\n'));
     }
 }

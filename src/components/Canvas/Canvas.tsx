@@ -1,98 +1,107 @@
-import { forwardRef, useEffect, useRef } from 'react';
-import './canvas.css'
+import { useEffect, useRef, useState } from 'react';
+import './canvas.css';
 import { Game } from '../../Utils/Game/Game';
-import BobailGame from '../../Utils/Bobail/BobailGame';
+import BobailGame, { Position } from '../../Utils/Bobail/BobailGame';
+import Swal from 'sweetalert2';
 
-const Canvas = forwardRef(({ }) => {
+const Canvas = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const canvaRef = useRef(null);
+    const canvasRef = useRef(null);
+    const [backgroundColor, setBackgroundColor] = useState("tomato");
 
-    let game: any = null;
-    // let newWorker = null;
     const bobailGame = new BobailGame();
+    let game: Game;
+    let firstMove: Position | null = null;
+    let timeoutId: number;
 
     useEffect(() => {
-        let timeoutId: number;
+        initializeGame();
+        const cleanup = setupResizeObserver();
+        return cleanup;
+    }, []);
 
-        gameLogic();
+    const initializeGame = () => {
+        if (!canvasRef.current) return;
+        game = new Game(canvasRef.current, bobailGame.getGrid());
+        game.onCellClicked = handleCellClick;
+    };
 
-        const observerCallback = () => {
+    const setupResizeObserver = () => {
+        if (!containerRef.current) return;
+        const resizeObserver = new ResizeObserver(() => {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
-                window.requestAnimationFrame(() => {
-                    if (containerRef.current) {
-                        game.resize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-                    }
-                });
-            }, 100); // Debounce time
-        };
+                if (containerRef.current) {
+                    game.resize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+                }
+            }, 100);
+        });
+        resizeObserver.observe(containerRef.current);
+        return () => resizeObserver.disconnect();
+    };
 
-        const resizeObserver = new ResizeObserver(observerCallback);
-
-        if (containerRef.current) {
-            resizeObserver.observe(containerRef.current);
+    const handleCellClick = (x: number, y: number) => {
+        if (bobailGame.isGameOver()) return;
+        const grid = bobailGame.getGrid();
+        game.resetFlagGrid();
+        const cellSelected: Position = { x, y };
+        
+        if (grid[x][y] === bobailGame.getCurrentPlayer() && bobailGame.getBobailMoved()) {
+            highlightAvailableMoves(bobailGame.getAvailablePieceMoves(cellSelected), cellSelected);
+        } else if (grid[x][y] === 3 && !bobailGame.getBobailMoved()) {
+            highlightAvailableMoves(bobailGame.getAvailableBobailMoves(cellSelected), cellSelected);
+        } else if (grid[x][y] === 0 && firstMove) {
+            processMove(cellSelected);
         }
+    };
 
-        return () => {
-            resizeObserver.disconnect();
-            clearTimeout(timeoutId);
-        };
-    }, [containerRef]);
+    const highlightAvailableMoves = (availablePositions: Position[], cellSelected: Position) => {
+        if (availablePositions?.length) {
+            firstMove = cellSelected;
+            game.drawFlagGrid({ origin: cellSelected, flagPositions: availablePositions });
+        }
+    };
 
-    const gameLogic = () => {
-        if (canvaRef.current) {
-            const grid = bobailGame.getBoard();
-            game = new Game(canvaRef.current, grid);
-
-            // Use for the move logic
-            let firstMove: {x: number, y: number} | null = null;
-
-            game.onCellClicked = (x: number, y: number) => {
-                const grid = bobailGame.getBoard();
-                const cellSelected = {x, y};
-
-                if (grid[x][y] === bobailGame.getCurrentPlayer() && bobailGame.getBobailMoved()) {
-                    firstMove = cellSelected;
-                    const availablePositions = bobailGame.getAvailablePieceMoves({x, y});
-
-                    if (availablePositions && availablePositions.length) {
-                        game.drawFlagGrid({ origin: cellSelected, flagPositions: availablePositions, value: 1 });
-                    }
-                }
-                else if (grid[x][y] === 3 && !bobailGame.getBobailMoved()) {
-                    firstMove = cellSelected;
-                    const availablePositions = bobailGame.getAvailableBobailMoves({x, y});
-
-                    if (availablePositions && availablePositions.length) {
-                        game.drawFlagGrid({ origin: cellSelected, flagPositions: availablePositions, value: 1 });
-                    }
-                }
-                else if (grid[x][y] === 0) {                    
-                    if(firstMove){
-                        if(bobailGame.getBobailMoved()) {
-                            bobailGame.movePiece(firstMove, cellSelected);
-                        }
-                        else {
-                            bobailGame.moveBobail(cellSelected);
-                        }
-                        firstMove = null;
-                    }
-                    game.resetFlagGrid();
-                }
+    const processMove = (cellSelected: Position) => {
+        if (bobailGame.getBobailMoved() && firstMove) {
+            if (bobailGame.movePiece(firstMove, cellSelected)) {
+                setBackgroundColor(bobailGame.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
             }
+        } else {
+            bobailGame.moveBobail(cellSelected);
         }
-    }
+        firstMove = null;
+        checkWinner();
+    };
 
-    // useImperativeHandle(ref, () => ({
-    //     changePattern, solve, resetWorker
-    // }), [game]);
+    const checkWinner = () => {
+        const winner = bobailGame.getWinner();
+        if (!winner) return;
+
+        setTimeout(() => {
+            Swal.fire({
+                title: "Game over",
+                html: `<span style="font-weight: bold; color: ${winner === 1 ? "red" : "blue"}">Player ${winner}</span> has won!`,
+                icon: "success",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                showDenyButton: true,
+                confirmButtonText: "Restart",
+                denyButtonText: "Close",
+            }).then(({ isConfirmed }) => {
+                if (isConfirmed) {
+                    bobailGame.initGame();
+                    game.setGrid(bobailGame.getGrid());
+                }
+            });
+        }, 500);
+    };
 
     return (
-        <div ref={containerRef} className='canvas-container'>
-            <canvas ref={canvaRef} className='canvas'></canvas>
+        <div ref={containerRef} className='canvas-container' style={{ backgroundColor }}>
+            <canvas ref={canvasRef} className='canvas'></canvas>
         </div>
-    )
-});
+    );
+};
 
 export default Canvas;
-
