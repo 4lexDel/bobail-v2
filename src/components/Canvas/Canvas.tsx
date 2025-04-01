@@ -3,7 +3,6 @@ import './canvas.css';
 import { Game } from '../../utils/Game/Game';
 import BobailGame, { Cell, Position } from '../../utils/Bobail/BobailGame';
 import Swal from 'sweetalert2';
-import BobailAlgorithmImplementation from '../../utils/Bobail/BobailAiImplementation';
 
 const createWorker = () => new Worker(
     new URL('../../workers/bobail.worker.js', import.meta.url),
@@ -19,8 +18,6 @@ const Canvas = () => {
     let game: Game;
 
     let newWorker: Worker | null = null;
-
-    const bobailAlgorithm = new BobailAlgorithmImplementation();
 
     let firstMove: Position | null = null;
     let timeoutId: number;
@@ -89,6 +86,8 @@ const Canvas = () => {
                             bobailGame.switchPlayer();
 
                             setBackgroundColor(bobailGame.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
+                            bobailGame.checkGameOver();
+                            checkWinner();
                         }
                     }
 

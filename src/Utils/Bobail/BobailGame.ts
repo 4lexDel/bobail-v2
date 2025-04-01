@@ -169,7 +169,7 @@ export default class BobailGame {
         this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
     }
 
-    private checkGameOver(): void {
+    public checkGameOver(): void {
         const bobailPosition = this.getBobailPosition();
 
         if(!bobailPosition) throw new Error("Bobail required on the grid");
