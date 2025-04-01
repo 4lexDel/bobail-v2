@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import './canvas.css';
 import { Game } from '../../utils/Game/Game';
-import BobailGame, { Position } from '../../utils/Bobail/BobailGame';
+import BobailGame, { Cell, Position } from '../../utils/Bobail/BobailGame';
 import Swal from 'sweetalert2';
 import BobailAlgorithmImplementation from '../../utils/Bobail/BobailAiImplementation';
+
+const createWorker = () => new Worker(
+    new URL('../../workers/bobail.worker.js', import.meta.url),
+    { type: 'module' }
+);
 
 const Canvas = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -12,6 +17,8 @@ const Canvas = () => {
 
     const bobailGame = new BobailGame();
     let game: Game;
+
+    let newWorker: Worker | null = null;
 
     const bobailAlgorithm = new BobailAlgorithmImplementation();
 
@@ -49,7 +56,7 @@ const Canvas = () => {
         const grid = bobailGame.getGrid();
         game.resetFlagGrid();
         const cellSelected: Position = { x, y };
-        
+
         if (grid[x][y] === bobailGame.getCurrentPlayer() && bobailGame.getBobailMoved()) {
             highlightAvailableMoves(bobailGame.getAvailablePieceMoves(cellSelected), cellSelected);
         } else if (grid[x][y] === 3 && !bobailGame.getBobailMoved()) {
@@ -70,13 +77,22 @@ const Canvas = () => {
         if (bobailGame.getBobailMoved() && firstMove) {
             if (bobailGame.movePiece(firstMove, cellSelected)) {
                 setBackgroundColor(bobailGame.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
+                updateGameGrid(bobailGame.getGrid());
 
-                const nextState = bobailAlgorithm.findBestMove(bobailGame.getGrid(), bobailGame.getCurrentPlayer());
-                console.log(nextState);
-                if(nextState) {
-                    bobailGame.setGrid(nextState);
-                    game.setGrid(nextState);
-                    bobailGame.switchPlayer();
+                resetWorker();
+                if (newWorker) {
+                    newWorker.onmessage = (event) => {
+                        const { nextState } = event.data;
+
+                        if (nextState) {
+                            updateGameGrid(nextState);
+                            bobailGame.switchPlayer();
+
+                            setBackgroundColor(bobailGame.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
+                        }
+                    }
+
+                    newWorker.postMessage({ grid: bobailGame.getGrid(), player: bobailGame.getCurrentPlayer() });
                 }
             }
         } else {
@@ -85,6 +101,16 @@ const Canvas = () => {
         firstMove = null;
         checkWinner();
     };
+
+    const resetWorker = () => {
+        if (newWorker) newWorker.terminate();
+        newWorker = createWorker();
+    }
+
+    const updateGameGrid = (newGrid: Cell[][]) => {
+        bobailGame.setGrid(newGrid);
+        game.setGrid(newGrid);
+    }
 
     const checkWinner = () => {
         const winner = bobailGame.getWinner();

@@ -41,3 +41,26 @@ Définition d'une position : une position est définis par le joueur à qui c'es
 Optimisation :
 - Implémente l'élagage alpha-beta
 - Ajoute une table de transposition pour fournir directement l'évaluation d'une position connu (voir la définition d'une position plus haut) 
+
+----------------------------------------------------------------------------------------------------------------------------
+
+IA :
+https://chatgpt.com/c/67eb7808-44cc-8000-adb2-1af5079302da
+Optimisation :
+- Heuristique : 
+    Supprimer les coups de recul quand avance possible 
+    Reconnaissance de pattern évident 
+    Reprendre la table pour mettre en avant les bon coups ? 
+- Gérer les positions symétrique (et miroir ?) 
+    Donner le même hash ? 
+    Fabriquer 1 seul child (random) sur les 2
+- Table de transposition
+    Fixer une limite (système de file) et déprécier les anciens entre chaque instance (pour pouvoir voir au delà) 
+    Essayer les coups issus de la table de transposition en premier.!!! 
+- Iterative Deepening 
+    Explorer d'abord avec une faible profondeur puis approfondir progressivement.
+- Extensions et Réductions Sélectives
+    Augmenter/réduire la profondeur de recherche dynamiquement 
+
+Évaluation :
+    Ajouter des pénalités (réciproque de certaines mesures) 
