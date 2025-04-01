@@ -22,6 +22,8 @@ const Canvas = () => {
     let firstMove: Position | null = null;
     let timeoutId: number;
 
+    let isAlgorithmProcessing = false;
+
     useEffect(() => {
         initializeGame();
         const cleanup = setupResizeObserver();
@@ -49,7 +51,7 @@ const Canvas = () => {
     };
 
     const handleCellClick = (x: number, y: number) => {
-        if (bobailGame.isGameOver()) return;
+        if (bobailGame.isGameOver() || isAlgorithmProcessing) return;
         const grid = bobailGame.getGrid();
         game.resetFlagGrid();
         const cellSelected: Position = { x, y };
@@ -80,6 +82,7 @@ const Canvas = () => {
                 if (newWorker) {
                     newWorker.onmessage = (event) => {
                         const { nextState } = event.data;
+                        isAlgorithmProcessing = false;
 
                         if (nextState) {
                             updateGameGrid(nextState);
@@ -91,6 +94,7 @@ const Canvas = () => {
                         }
                     }
 
+                    isAlgorithmProcessing = true;
                     newWorker.postMessage({ grid: bobailGame.getGrid(), player: bobailGame.getCurrentPlayer() });
                 }
             }
