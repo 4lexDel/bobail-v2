@@ -3,6 +3,7 @@ import './canvas.css';
 import { Game } from '../../utils/Game/Game';
 import BobailGame, { Cell, Position } from '../../utils/Bobail/BobailGame';
 import Swal from 'sweetalert2';
+import { Action } from '../../utils/Bobail/BobailMontecarloImplementation';
 
 const createWorker = () => new Worker(
     new URL('../../workers/bobail.worker.js', import.meta.url),
@@ -81,17 +82,8 @@ const Canvas = () => {
                 resetWorker();
                 if (newWorker) {
                     newWorker.onmessage = (event) => {
-                        const { nextState } = event.data;
-                        isAlgorithmProcessing = false;
-
-                        if (nextState) {
-                            updateGameGrid(nextState);
-                            bobailGame.switchPlayer();
-
-                            setBackgroundColor(bobailGame.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
-                            bobailGame.checkGameOver();
-                            checkWinner();
-                        }
+                        // AI answer
+                        handleWorkerOnMessage(event);
                     }
                     
                     isAlgorithmProcessing = true;
@@ -105,6 +97,40 @@ const Canvas = () => {
         checkWinner();
     };
 
+    const handleWorkerOnMessage = (event: MessageEvent<any>) => {
+        const { nextAction }: { nextAction: Action } = event.data;
+
+        if (nextAction) {
+            const grid = bobailGame.getGrid();
+
+            grid[nextAction.bobailPosition.from.x][nextAction.bobailPosition.from.y] = 0;
+            grid[nextAction.bobailPosition.to.x][nextAction.bobailPosition.to.y] = 3;
+            updateGameGrid(grid);
+
+            const isGameOver = processAiPostMove(false);
+            if(isGameOver) return;
+
+            setTimeout(() => {
+                grid[nextAction.piecePosition.from.x][nextAction.piecePosition.from.y] = 0;
+                grid[nextAction.piecePosition.to.x][nextAction.piecePosition.to.y] = bobailGame.getCurrentPlayer();
+                updateGameGrid(grid);
+
+                processAiPostMove(true);
+            }, 700);
+        }
+    }
+
+    const processAiPostMove = (switchPlayer: boolean = false) => {
+        if (switchPlayer) {
+            bobailGame.switchPlayer();
+            setBackgroundColor(bobailGame.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
+            isAlgorithmProcessing = false;
+        }
+        
+        bobailGame.checkGameOver();
+        return checkWinner();
+    }
+
     const resetWorker = () => {
         if (newWorker) newWorker.terminate();
         newWorker = createWorker();
@@ -117,7 +143,7 @@ const Canvas = () => {
 
     const checkWinner = () => {
         const winner = bobailGame.getWinner();
-        if (!winner) return;
+        if (!winner) return false;
 
         setTimeout(() => {
             Swal.fire({
@@ -136,6 +162,8 @@ const Canvas = () => {
                 }
             });
         }, 500);
+
+        return true;
     };
 
     return (

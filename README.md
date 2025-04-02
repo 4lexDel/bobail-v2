@@ -20,14 +20,15 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 
 
 ## TODO
-- AI
-    => Bobail Game: use the service
-    => COMPLETE THE EVALUATION METHOD !! (Layer grade (check readme))
-    => Check player state on the minmax...
-    => Make sure the algo return the move instead of the grid
+- Make more space to add a header while keeping the canvas responsive
+
+- Loading during the AI process
 
 - Free flag on right click
 - Display previous move(s)
-- Animation (mouvement des pièces)
+- Animation (pieces movement)
 - Add hover on the grid
-- Add a tutorial modal
+- Add a tutorial modal (at least the rules of the game)
+
+## Bugs & clean
+prevent bobailPosition undefined to refacto

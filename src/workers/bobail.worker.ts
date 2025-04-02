@@ -5,12 +5,10 @@ import BobailMontecarloImplementation from "../utils/Bobail/BobailMontecarloImpl
 
 onmessage = async(event) => {
   const { grid, player }: { grid: Cell[][], player: Player } = event.data;
-  console.log("worker");
   
-
   const bobailAlgorithm = new BobailMontecarloImplementation();
 
-  const nextState = await bobailAlgorithm.findBestMove(grid, player);
+  const nextAction = await bobailAlgorithm.findBestMove(grid, player);
 
-  postMessage({ nextState });
+  postMessage({ nextAction });
 };

@@ -4,7 +4,7 @@ import { Cell, Player, Position } from "./BobailGame";
 import { ApplyAction, CalculateReward, GenerateActions, StateIsTerminal } from "macao/dist/types/entities";
 
 type State = { board: Cell[][], player: Player };
-type Action = { bobailPosition: { from: Position, to: Position }, piecePosition: { from: Position, to: Position } };
+export type Action = { bobailPosition: { from: Position, to: Position }, piecePosition: { from: Position, to: Position } };
 
 type Func = {
     generateActions: GenerateActions<State, Action>;
@@ -17,7 +17,7 @@ export default class BobailMontecarloImplementation {
     constructor() {
     }
 
-    async findBestMove(gamePosition: Cell[][], currentPlayer: Player): Promise<Cell[][]> {       
+    findBestMove(gamePosition: Cell[][], currentPlayer: Player): Promise<Action> {       
         // const startTime = performance.now();
 
         // const endTime = performance.now();
@@ -35,12 +35,8 @@ export default class BobailMontecarloImplementation {
         };
 
         const macao = new Macao<State, Action>(funcs, config);
-
-        // Somewhere inside your game loop
-        const action = await macao.getAction({ board: gamePosition, player: currentPlayer });
-        const nextState = this.applyAction({ board: gamePosition, player: currentPlayer }, action).board;
         
-        return nextState;
+        return macao.getAction({ board: gamePosition, player: currentPlayer });
     }
 
     generateActions(state: State): Action[] {
@@ -147,9 +143,11 @@ export default class BobailMontecarloImplementation {
     applyAction(state: State, action: Action): State {
         const newBoard = state.board.map(row => [...row]);
 
-        // Move the Bobail        
-        newBoard[action.bobailPosition.from.x][action.bobailPosition.from.y] = 0;
-        newBoard[action.bobailPosition.to.x][action.bobailPosition.to.y] = 3;
+        // Move the Bobail => TO REFACTO!!
+        if(action.bobailPosition) {
+            newBoard[action.bobailPosition.from.x][action.bobailPosition.from.y] = 0;
+            newBoard[action.bobailPosition.to.x][action.bobailPosition.to.y] = 3;
+        }        
 
         // Move the player's piece
         newBoard[action.piecePosition.from.x][action.piecePosition.from.y] = 0;
