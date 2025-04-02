@@ -24,9 +24,7 @@ export class GameBase {
         this.mouseX = 0;
         this.mouseY = 0;
 
-        window.addEventListener("resize", () => {
-            console.log(this.canvas.clientWidth);
-            
+        window.addEventListener("resize", () => {           
             this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
         });
 
@@ -45,10 +43,10 @@ export class GameBase {
         if (currentTime - this.prevTick < 1000) return;
         this.prevTick = currentTime;
 
-        this.canvas.width = width;
-        this.canvas.height = height;
+        this.canvas.width = width - this.canvas.offsetLeft;
+        this.canvas.height = height - this.canvas.offsetTop;
 
-        this.d = Math.min(this.canvas.width / (this.grid.length + 1), this.canvas.height / (this.grid[0].length + 1));
+        this.d = Math.min(this.canvas.width / (this.grid.length + 1), (this.canvas.height) / (this.grid[0].length + 1));
 
         // Use to center the screen
         this.mx = (this.canvas.width - (this.d * this.grid.length)) / 2;

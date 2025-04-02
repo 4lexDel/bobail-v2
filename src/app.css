@@ -1,0 +1,15 @@
+.main {
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.first-section {
+    margin: 0;
+    padding: 5px 50px;
+    background-color: antiquewhite;
+}
