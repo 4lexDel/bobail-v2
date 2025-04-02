@@ -30,7 +30,7 @@ export default class BobailMontecarloImplementation {
         };
 
         const config = {
-            duration: 3000
+            duration: 5000
             // ...
         };
 
@@ -39,7 +39,6 @@ export default class BobailMontecarloImplementation {
         // Somewhere inside your game loop
         const action = await macao.getAction({ board: gamePosition, player: currentPlayer });
         const nextState = this.applyAction({ board: gamePosition, player: currentPlayer }, action).board;
-        console.log(nextState);
         
         return nextState;
     }
