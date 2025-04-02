@@ -33,3 +33,4 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 ## Bugs & clean
 prevent bobailPosition undefined to refacto
 Clean the game base to include the draw logic
+Margin top and bottom

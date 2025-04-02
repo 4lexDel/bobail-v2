@@ -12,5 +12,6 @@
     z-index: 1;
     margin: 0px 0px;
     padding: 0;
-    flex: 1;
+    /* flex: 1; */
+    height: 100%;
 }
