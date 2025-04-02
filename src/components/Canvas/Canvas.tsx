@@ -11,7 +11,6 @@ const createWorker = () => new Worker(
 );
 
 const Canvas = () => {
-    const containerRef = useRef<HTMLDivElement | null>(null);
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
@@ -21,34 +20,17 @@ const Canvas = () => {
     let newWorker: Worker | null = null;
 
     let firstMove: Position | null = null;
-    let timeoutId: ReturnType<typeof setTimeout>;
 
     let isAlgorithmProcessing = false;
 
     useEffect(() => {
         initializeGame();
-        const cleanup = setupResizeObserver();
-        return cleanup;
     }, []);
 
     const initializeGame = () => {
         if (!canvasRef.current) return;
         game = new Game(canvasRef.current, bobailGame.getGrid());
         game.onCellClicked = handleCellClick;
-    };
-
-    const setupResizeObserver = () => {
-        if (!containerRef.current) return;
-        const resizeObserver = new ResizeObserver(() => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                if (containerRef.current) {
-                    game.resize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-                }
-            }, 100);
-        });
-        resizeObserver.observe(containerRef.current);
-        return () => resizeObserver.disconnect();
     };
 
     const handleCellClick = (x: number, y: number) => {
@@ -167,9 +149,10 @@ const Canvas = () => {
     };
 
     return (
-        <div ref={containerRef} className='canvas-container' style={{ backgroundColor }}>
+        <>
             <canvas ref={canvasRef} className='canvas'></canvas>
-        </div>
+            <div className="background" style={{ backgroundColor }}></div>
+        </>
     );
 };
 

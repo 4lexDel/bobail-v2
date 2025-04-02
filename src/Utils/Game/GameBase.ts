@@ -23,6 +23,14 @@ export class GameBase {
 
         this.mouseX = 0;
         this.mouseY = 0;
+
+        window.addEventListener("resize", () => {
+            console.log(this.canvas.clientWidth);
+            
+            this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
+        });
+
+        this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
     }
 
     onMouseDown(callback: (e: MouseEvent) => void): void {
@@ -33,6 +41,10 @@ export class GameBase {
     }
 
     resize(width: number, height: number): void {
+        const currentTime = Date.now();
+        if (currentTime - this.prevTick < 1000) return;
+        this.prevTick = currentTime;
+
         this.canvas.width = width;
         this.canvas.height = height;
 

@@ -144,7 +144,7 @@ export class Game extends GameBase {
         );
         this.ctx.fill();
         this.ctx.strokeStyle = "rgb(20, 20, 20)";
-        this.ctx.lineWidth = 3;
+        this.ctx.lineWidth = this.canvas.width <= 450 ? 1 : 2;
         this.ctx.stroke();
 
         this.displayCellBorder(this.mx + x * this.d, this.my + y * this.d, this.d);
@@ -152,7 +152,7 @@ export class Game extends GameBase {
 
     private displayCellBorder(x: number, y: number, d: number): void {
         this.ctx.strokeStyle = "rgb(100, 100, 100)";
-        this.ctx.lineWidth = 4;
+        this.ctx.lineWidth = this.canvas.width <= 650 ? 2 : 4;
         this.ctx.strokeRect(x, y, d, d);
     }
 }
