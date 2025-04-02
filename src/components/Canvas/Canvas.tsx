@@ -20,7 +20,7 @@ const Canvas = () => {
     let newWorker: Worker | null = null;
 
     let firstMove: Position | null = null;
-    let timeoutId: number;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     let isAlgorithmProcessing = false;
 
@@ -93,7 +93,7 @@ const Canvas = () => {
                             checkWinner();
                         }
                     }
-
+                    
                     isAlgorithmProcessing = true;
                     newWorker.postMessage({ grid: bobailGame.getGrid(), player: bobailGame.getCurrentPlayer() });
                 }

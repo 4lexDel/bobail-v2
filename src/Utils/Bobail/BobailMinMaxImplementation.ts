@@ -2,12 +2,12 @@ import MinMaxAlgorithm, { GameStrategy } from "../MinMax/MinMax";
 import { Cell, Player } from "./BobailGame";
 import BobailService from "./BobailService";
 
-export default class BobailAlgorithmImplementation implements GameStrategy {
+export default class BobailMinMaxImplementation implements GameStrategy {
     minMax: MinMaxAlgorithm;
     bobailService: BobailService;
 
     constructor() {
-        const depth = 3;
+        const depth = 5;
         console.log("Depth max = ", depth);
 
         this.minMax = new MinMaxAlgorithm(this, depth);
