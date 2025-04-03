@@ -1,11 +1,11 @@
 import './header.css'
 
-function Header() {
+function Header({ onGameChange }: { onGameChange: (value: string) => void }) {
   return (
     <div className="header">
       <div className="left-side">
         <img src="/bobail-v2/icon.png" alt="icon" />
-        <select name="game-selector" id="game-selector">
+        <select name="game-selector" id="game-selector" onChange={(event) => onGameChange(event.target.value)}>
           <option value="bobail">Bobail</option>
           <option value="connect-four">Connect 4</option>
           <option value="abalone">Abalone</option>
