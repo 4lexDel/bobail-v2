@@ -150,8 +150,10 @@ const Canvas = () => {
 
     return (
         <>
-            <canvas ref={canvasRef} className='canvas'></canvas>
-            <div className="background" style={{ backgroundColor }}></div>
+            <div className='container'>
+                <canvas ref={canvasRef} className='canvas'></canvas>
+                <div className="background" style={{ backgroundColor }}></div>
+            </div>
         </>
     );
 };

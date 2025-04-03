@@ -144,7 +144,7 @@ export class Game extends GameBase {
         );
         this.ctx.fill();
         this.ctx.strokeStyle = "rgb(20, 20, 20)";
-        this.ctx.lineWidth = this.canvas.width <= 450 ? 1 : 2;
+        this.ctx.lineWidth = 2;
         this.ctx.stroke();
 
         this.displayCellBorder(this.mx + x * this.d, this.my + y * this.d, this.d);

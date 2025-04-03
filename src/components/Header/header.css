@@ -1,6 +1,6 @@
 .header {
     background-color: #4c4c4c;
-    padding: 20px 30px;
+    padding: 10px 20px;
 }
 
 .header,
@@ -14,34 +14,28 @@
 
 }
 
-.links a {
+.links svg {
     text-decoration: none;
     font-size: 1.2rem;
     color: whitesmoke;
+    fill: whitesmoke;
+    stroke: black;
+    width: 40px;
+    height: 40px;
 }
 
-.links a:hover {
-    text-decoration: underline
+.links svg:hover {
+    cursor: pointer;
+    fill: rgb(198, 198, 198);
 }
 
-.slash {
+.current-game {
     font-size: 1.3rem;
     color: whitesmoke;
 }
 
-.current-game {
-    font-size: 1.7rem;
-    color: whitesmoke;
-}
-
 .header img {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     border: 2px solid black;
 }
-/* 
-@media (max-width: 1070px) and (min-width: 768px) {
-    .header {
-        font-size: 12px;
-    }
-} */
