@@ -2,6 +2,7 @@ import { Macao } from "macao";
 
 import { Cell, Player, Position } from "./BobailGame";
 import { ApplyAction, CalculateReward, GenerateActions, StateIsTerminal } from "macao/dist/types/entities";
+import BobailService from "./BobailService";
 
 type State = { board: Cell[][], player: Player };
 export type Action = { bobailPosition: { from: Position, to: Position }, piecePosition: { from: Position, to: Position } };
@@ -40,83 +41,14 @@ export default class BobailMontecarloImplementation {
     }
 
     generateActions(state: State): Action[] {
-        const getBobailPosition = (grid: Cell[][]) => {
-            for (let x = 0; x < 5; x++) {
-                for (let y = 0; y < 5; y++) {
-                    if (grid[x][y] === 3) {
-                        return { x, y };
-                    }
-                }
-            }
-            return null;
-        }
-
-        const isWithinBounds = (position: Position): boolean => {
-            return position.x >= 0 && position.x < 5 && position.y >= 0 && position.y < 5;
-        }
-
-        const getAdjacentPositions = (position: Position): Position[] => {
-            const directions = [
-                { x: -1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 },
-                { x: 0, y: -1 }, { x: 0, y: 1 },
-                { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 1, y: 1 },
-            ];
-            return directions
-                .map(dir => ({ x: position.x + dir.x, y: position.y + dir.y }))
-                .filter(isWithinBounds.bind(this));
-        }
-
-        const getPlayerPositions = (grid: Cell[][], player: Player): Position[] => {
-            const positions: Position[] = [];
-            for (let x = 0; x < 5; x++) {
-                for (let y = 0; y < 5; y++) {
-                    if (grid[x][y] === player) {
-                        positions.push({ x, y });
-                    }
-                }
-            }
-            return positions;
-        }
-
-        const getLinearMoves = (grid: Cell[][], position: Position): Position[] => {
-            const moves: Position[] = [];
-            const directions = [
-                { x: -1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 },
-                { x: 0, y: -1 }, { x: 0, y: 1 },
-                { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 1, y: 1 },
-            ];
-            for (const dir of directions) {
-                let x = position.x + dir.x;
-                let y = position.y + dir.y;
-    
-                let pathSearched = false;
-                while (isWithinBounds({ x, y }) && grid[x][y] === 0) {
-                    x += dir.x;
-                    y += dir.y;
-                    pathSearched = true;
-                }
-                pathSearched && moves.push({ x: x - dir.x, y: y - dir.y });
-            }
-            return moves;
-        }
-
         const actions: Action[] = [];
 
-        // const opponent = currentPlayer === 1 ? 2 : 1;
-        const bobailPosition = getBobailPosition(state.board);
+        const bobailPosition = BobailService.getBobailPosition(state.board);
         if (!bobailPosition) throw new Error("Bobail is missing from the grid");
 
         // Generate all possible Bobail moves
-        let bobailMoves = getAdjacentPositions(bobailPosition)
+        let bobailMoves = BobailService.getAdjacentPositions(bobailPosition)
             .filter(pos => state.board[pos.x][pos.y] === 0);
-
-        // Remove the backward movement if the bobail can move forward
-        // const newBobailMove = bobailMoves.filter((pos) => {
-        //     if (currentPlayer === 1) return pos.y > bobailPosition.y;
-        //     return pos.y < bobailPosition.y;
-        // })
-
-        // if (newBobailMove.length >= 2) bobailMoves = newBobailMove;
 
         for (const bobailMove of bobailMoves) {
             const newGridBobail = state.board.map(row => [...row]);
@@ -125,9 +57,9 @@ export default class BobailMontecarloImplementation {
             newGridBobail[bobailMove.x][bobailMove.y] = 3;
 
             // Generate all possible piece moves for current player
-            const playerPositions = getPlayerPositions(newGridBobail, state.player);
+            const playerPositions = BobailService.getPlayerPositions(newGridBobail, state.player);
             for (const piece of playerPositions) {
-                const pieceMoves = getLinearMoves(newGridBobail, piece);
+                const pieceMoves = BobailService.getLinearMoves(newGridBobail, piece);
                 for (const move of pieceMoves) {
                     actions.push({
                         bobailPosition: { from: { x: bobailPosition.x, y: bobailPosition.y }, to: { x: bobailMove.x, y: bobailMove.y } },
@@ -157,84 +89,18 @@ export default class BobailMontecarloImplementation {
     }
 
     stateIsTerminal(state: State): boolean {
-        const getBobailPosition = (grid: Cell[][]) => {
-            for (let x = 0; x < 5; x++) {
-                for (let y = 0; y < 5; y++) {
-                    if (grid[x][y] === 3) {
-                        return { x, y };
-                    }
-                }
-            }
-            return null;
-        }
-
-        const isWithinBounds = (position: Position): boolean => {
-            return position.x >= 0 && position.x < 5 && position.y >= 0 && position.y < 5;
-        }
-
-        const getAdjacentPositions = (position: Position): Position[] => {
-            const directions = [
-                { x: -1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 },
-                { x: 0, y: -1 }, { x: 0, y: 1 },
-                { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 1, y: 1 },
-            ];
-            return directions
-                .map(dir => ({ x: position.x + dir.x, y: position.y + dir.y }))
-                .filter(isWithinBounds.bind(this));
-        }
-
-        const isGameOver = (grid: Cell[][]): boolean => {
-            const bobailPosition = getBobailPosition(grid);
-            if(!bobailPosition) throw new Error("Bobail required on the grid");
-    
-            // Edge winning condition
-            if(bobailPosition.y === 4 || bobailPosition.y === 0) return true
-    
-            const adjacentPositions = getAdjacentPositions(bobailPosition).filter((pos) => grid[pos.x][pos.y] === 0);
-            // Stuck winning condition
-            if(!adjacentPositions.length) return true;
-    
-            return false;
-        }
-
-        return isGameOver(state.board);
+        return BobailService.isGameOver(state.board);
     }
 
     calculateReward(state: State, player: number): number {
-        const getBobailPosition = (grid: Cell[][]) => {
-            for (let x = 0; x < 5; x++) {
-                for (let y = 0; y < 5; y++) {
-                    if (grid[x][y] === 3) {
-                        return { x, y };
-                    }
-                }
-            }
-            return null;
-        }
-
-        const isWithinBounds = (position: Position): boolean => {
-            return position.x >= 0 && position.x < 5 && position.y >= 0 && position.y < 5;
-        }
-
-        const getAdjacentPositions = (position: Position): Position[] => {
-            const directions = [
-                { x: -1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 },
-                { x: 0, y: -1 }, { x: 0, y: 1 },
-                { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 1, y: 1 },
-            ];
-            return directions
-                .map(dir => ({ x: position.x + dir.x, y: position.y + dir.y }))
-                .filter(isWithinBounds.bind(this));
-        }
-
-        const bobailPosition = getBobailPosition(state.board);
+        const bobailPosition = BobailService.getBobailPosition(state.board);
 
         if(!bobailPosition) return 0;
 
         if(bobailPosition.y === 4) return (player === 1 ? -1 : 1);
         else if(bobailPosition.y === 0) return (player === 1 ? 1 : -1);
 
-        const adjacentPositions = getAdjacentPositions(bobailPosition)
+        const adjacentPositions = BobailService.getAdjacentPositions(bobailPosition)
             .filter((pos) => state.board[pos.x][pos.y] === 0)
         
         if(!adjacentPositions.length) return 1;

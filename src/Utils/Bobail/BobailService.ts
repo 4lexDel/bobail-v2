@@ -1,9 +1,7 @@
 import { Cell, Player, Position } from "./BobailGame";
 
 export default class BobailService {
-    constructor() {}
-
-    public getPlayerPositions(grid: Cell[][], player: Player): Position[] {
+    public static getPlayerPositions(grid: Cell[][], player: Player): Position[] {
         const positions: Position[] = [];
         for (let x = 0; x < 5; x++) {
             for (let y = 0; y < 5; y++) {
@@ -15,7 +13,7 @@ export default class BobailService {
         return positions;
     }
 
-    public getBobailPosition(grid: Cell[][]): Position | null {
+    public static getBobailPosition(grid: Cell[][]): Position | null {
         for (let x = 0; x < 5; x++) {
             for (let y = 0; y < 5; y++) {
                 if (grid[x][y] === 3) {
@@ -26,11 +24,11 @@ export default class BobailService {
         return null;
     }
 
-    public isWithinBounds(position: Position): boolean {
+    public static isWithinBounds(position: Position): boolean {
         return position.x >= 0 && position.x < 5 && position.y >= 0 && position.y < 5;
     }
 
-    public getAdjacentPositions(position: Position): Position[] {
+    public static getAdjacentPositions(position: Position): Position[] {
         const directions = [
             { x: -1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 },
             { x: 0, y: -1 }, { x: 0, y: 1 },
@@ -41,11 +39,11 @@ export default class BobailService {
             .filter(this.isWithinBounds.bind(this));
     }
 
-    public getPieceAt(grid: Cell[][], position: Position): Cell {
+    public static getPieceAt(grid: Cell[][], position: Position): Cell {
         return grid[position.x][position.y];
     }
 
-    public getLinearMoves(grid: Cell[][], position: Position): Position[] {
+    public static getLinearMoves(grid: Cell[][], position: Position): Position[] {
         const moves: Position[] = [];
         const directions = [
             { x: -1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 },
@@ -67,14 +65,14 @@ export default class BobailService {
         return moves;
     }
 
-    public isGameOver(grid: Cell[][]): boolean {
-        const bobailPosition = this.getBobailPosition(grid);
+    public static isGameOver(grid: Cell[][]): boolean {
+        const bobailPosition = BobailService.getBobailPosition(grid);
         if(!bobailPosition) throw new Error("Bobail required on the grid");
 
         // Edge winning condition
         if(bobailPosition.y === 4 || bobailPosition.y === 0) return true
 
-        const adjacentPositions = this.getAdjacentPositions(bobailPosition).filter((pos) => this.getPieceAt(grid, pos) === 0);
+        const adjacentPositions = BobailService.getAdjacentPositions(bobailPosition).filter((pos) => this.getPieceAt(grid, pos) === 0);
         // Stuck winning condition
         if(!adjacentPositions.length) return true;
 
