@@ -1,21 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
-import './canvas.css';
-import { Game } from '../../utils/Game/Game';
-import BobailGame, { Cell, Position } from '../../utils/Bobail/BobailGame';
+import './bobailCanvas.css';
 import Swal from 'sweetalert2';
-import { Action } from '../../utils/Bobail/BobailMontecarloImplementation';
+import { CanvasGame } from '../../utils/canvas/CanvasGame';
+import BobailGame, { Cell } from '../../games/Bobail/BobailGame';
+import { Position } from '../../utils/models';
+import { Action } from '../../games/Bobail/BobailMontecarloImplementation';
 
 const createWorker = () => new Worker(
     new URL('../../workers/bobail.worker.js', import.meta.url),
     { type: 'module' }
 );
 
-const Canvas = () => {
+const BobailCanvas = () => {
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
     const bobailGame = new BobailGame();
-    let game: Game;
+    let game: CanvasGame;
 
     let newWorker: Worker | null = null;
 
@@ -29,7 +30,7 @@ const Canvas = () => {
 
     const initializeGame = () => {
         if (!canvasRef.current) return;
-        game = new Game(canvasRef.current, bobailGame.getGrid());
+        game = new CanvasGame(canvasRef.current, bobailGame.getGrid());
         game.onCellClicked = handleCellClick;
     };
 
@@ -158,4 +159,4 @@ const Canvas = () => {
     );
 };
 
-export default Canvas;
+export default BobailCanvas;

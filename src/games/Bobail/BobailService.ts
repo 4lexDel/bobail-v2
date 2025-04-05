@@ -1,4 +1,5 @@
-import { Cell, Player, Position } from "./BobailGame";
+import { Player, Position } from "../../utils/models";
+import { Cell } from "./BobailGame";
 
 export default class BobailService {
     public static getPlayerPositions(grid: Cell[][], player: Player): Position[] {

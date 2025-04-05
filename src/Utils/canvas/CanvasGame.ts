@@ -1,6 +1,6 @@
-import { GameBase } from "./GameBase";
+import { CanvasGameBase } from "./CanvasGameBase";
 
-export class Game extends GameBase {
+export class CanvasGame extends CanvasGameBase {
     private pieceHexaColor: string[] = [];
     private flagHexaColor: string[] = [];
     private colorBackground: string = "rgb(120, 120, 120)";
@@ -19,6 +19,7 @@ export class Game extends GameBase {
     public setGrid(grid: number[][]): void {
         this.grid = grid;
         this.resetFlagGrid();
+        this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
     }
 
     public resetFlagGrid(): void {

@@ -1,4 +1,4 @@
-export class GameBase {
+export class CanvasGameBase {
     canvas: HTMLCanvasElement;
     grid: number[][];
     ctx!: CanvasRenderingContext2D;

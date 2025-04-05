@@ -1,8 +1,9 @@
 import { Macao } from "macao";
 
-import { Cell, Player, Position } from "./BobailGame";
+import { Cell } from "./BobailGame";
 import { ApplyAction, CalculateReward, GenerateActions, StateIsTerminal } from "macao/dist/types/entities";
 import BobailService from "./BobailService";
+import { Player, Position } from "../../utils/models";
 
 type State = { board: Cell[][], player: Player };
 export type Action = { bobailPosition: { from: Position, to: Position }, piecePosition: { from: Position, to: Position } };

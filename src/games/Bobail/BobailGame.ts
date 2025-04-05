@@ -1,6 +1,6 @@
-export type Player = 1 | 2;
+import { Player, Position } from "../../utils/models";
+
 export type Cell = 0 | Player | 3;
-export type Position = { x: number; y: number };
 
 export default class BobailGame {
     private grid!: Cell[][];

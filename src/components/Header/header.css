@@ -33,8 +33,12 @@
     font-size: 1.2rem;
     width: max-content;
     padding: 2px 5px;
-    border: 1px solid transparent;
-    border-color: transparent transparent rgba(0, 0, 0, 0) transparent;
+    border: 1px solid whitesmoke;
+    border-radius: 5px;
+}
+
+#game-selector button {
+    background-color: blue;
 }
 
 #game-selector option {

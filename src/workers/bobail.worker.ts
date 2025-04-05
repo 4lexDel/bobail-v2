@@ -1,7 +1,8 @@
 // Worker
 
-import { Cell, Player } from "../utils/Bobail/BobailGame";
-import BobailMontecarloImplementation from "../utils/Bobail/BobailMontecarloImplementation";
+import { Cell } from "../games/Bobail/BobailGame";
+import BobailMontecarloImplementation from "../games/Bobail/BobailMontecarloImplementation";
+import { Player } from "../utils/models";
 
 onmessage = async(event) => {
   const { grid, player }: { grid: Cell[][], player: Player } = event.data;
