@@ -25,14 +25,10 @@ const BobailCanvas = () => {
     let isAlgorithmProcessing = false;
 
     useEffect(() => {
-        initializeGame();
-    }, []);
-
-    const initializeGame = () => {
         if (!canvasRef.current) return;
         game = new CanvasGame(canvasRef.current, bobailGame.getGrid());
         game.onCellClicked = handleCellClick;
-    };
+    }, []);
 
     const handleCellClick = (x: number, y: number) => {
         if (bobailGame.isGameOver() || isAlgorithmProcessing) return;

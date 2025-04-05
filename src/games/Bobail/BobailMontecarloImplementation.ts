@@ -48,7 +48,7 @@ export default class BobailMontecarloImplementation {
         if (!bobailPosition) throw new Error("Bobail is missing from the grid");
 
         // Generate all possible Bobail moves
-        let bobailMoves = BobailService.getAdjacentPositions(bobailPosition)
+        const bobailMoves = BobailService.getAdjacentPositions(bobailPosition)
             .filter(pos => state.board[pos.x][pos.y] === 0);
 
         for (const bobailMove of bobailMoves) {

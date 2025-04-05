@@ -58,8 +58,8 @@ export class CanvasGame extends CanvasGameBase {
     }
 
     private mouseAction(): void {
-        let x = Math.floor((this.mouseX - this.mx) / this.d);
-        let y = Math.floor((this.mouseY - this.my) / this.d);
+        const x = Math.floor((this.mouseX - this.mx) / this.d);
+        const y = Math.floor((this.mouseY - this.my) / this.d);
 
         if (x < 0 || x >= this.grid.length || y < 0 || y >= this.grid[0].length) {
             return;
@@ -78,7 +78,7 @@ export class CanvasGame extends CanvasGameBase {
         /*------------------------------FPS-----------------------------*/
         window.requestAnimationFrame(() => this.draw());
 
-        let now = Math.round(this.FPS * Date.now() / 1000);
+        const now = Math.round(this.FPS * Date.now() / 1000);
         if (now === this.prevTick) return;
         this.prevTick = now;
         /*--------------------------RENDER------------------------------*/
