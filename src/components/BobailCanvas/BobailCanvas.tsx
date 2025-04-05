@@ -28,7 +28,12 @@ const BobailCanvas = () => {
         if (!canvasRef.current) return;
         game = new CanvasGame(canvasRef.current, bobailGame.getGrid());
         game.onCellClicked = handleCellClick;
+        game.onCellHover = handleCellHover;
     }, []);
+
+    const handleCellHover = (x: number, y: number) => {
+        game.editFlagGrid([{ x, y }], CanvasGame.HOVER);
+    }
 
     const handleCellClick = (x: number, y: number) => {
         if (bobailGame.isGameOver() || isAlgorithmProcessing) return;
@@ -48,7 +53,8 @@ const BobailCanvas = () => {
     const highlightAvailableMoves = (availablePositions: Position[], cellSelected: Position) => {
         if (availablePositions?.length) {
             firstMove = cellSelected;
-            game.drawFlagGrid({ origin: cellSelected, flagPositions: availablePositions });
+            game.editFlagGrid(availablePositions, CanvasGame.MOVE_AVAILABLE);
+            game.editFlagGrid([cellSelected], CanvasGame.PIECE_SELECTED);
         }
     };
 

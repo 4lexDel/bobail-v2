@@ -1,3 +1,5 @@
+import { Position } from "../models";
+
 export class CanvasGameBase {
     canvas: HTMLCanvasElement;
     grid: number[][];
@@ -10,6 +12,9 @@ export class CanvasGameBase {
     my: number = 0;
     d: number = 0;
     isRenderNeed: boolean = false;
+
+    onCellClicked: ((x: number, y: number) => void) | null = null;
+    onCellHover: ((x: number, y: number) => void) | null = null;
 
     constructor(canvas: HTMLCanvasElement, grid: number[][]) {
         this.canvas = canvas;
@@ -31,14 +36,22 @@ export class CanvasGameBase {
         this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
     }
 
-    onMouseDown(callback: (e: MouseEvent) => void): void {        
-        this.canvas.onmousedown = (e: MouseEvent) => {
-            this.refreshMouseCoord(e);
-            callback(e);
-        };
+    protected render(): void {
+        /*------------------------------FPS-----------------------------*/  
+        window.requestAnimationFrame(() => this.render());
+        const now = Math.round(this.FPS * Date.now() / 1000);
+        if (now === this.prevTick) return;
+        this.prevTick = now;
+        /*--------------------------RENDER------------------------------*/
+        if (!this.isRenderNeed) return; // Use to avoid too much rendering
+        this.draw();
     }
 
-    resize(width: number, height: number): void {
+    protected draw(): void {
+        throw new Error("The draw method is not implemented.");
+    }
+
+    protected resize(width: number, height: number): void {
         const currentTime = Date.now();
         if (currentTime - this.prevTick < 1000) return;
         this.prevTick = currentTime;
@@ -55,7 +68,7 @@ export class CanvasGameBase {
         this.isRenderNeed = true;
     }
 
-    getMousePos(evt: MouseEvent): { x: number; y: number } {
+    private getMousePos(evt: MouseEvent): { x: number; y: number } {
         const rect = this.canvas.getBoundingClientRect();
         return {
             x: evt.clientX - rect.left,
@@ -63,10 +76,56 @@ export class CanvasGameBase {
         };
     }
 
-    refreshMouseCoord(e: MouseEvent): void {
+    private refreshMouseCoord(e: MouseEvent): void {
         const coord = this.getMousePos(e);
 
         this.mouseX = coord.x;
         this.mouseY = coord.y;
+    }
+
+    protected initEvent(): void {
+        this.onMouseDown(() => this.handleMouseDown());
+        this.onMouseHover(() => this.handleMouseHover());
+    }
+
+    private onMouseDown(callback: (e: MouseEvent) => void): void {        
+        this.canvas.onmousedown = (e: MouseEvent) => {
+            callback(e);
+        };
+    }
+
+    private onMouseHover(callback: (e: MouseEvent) => void): void {        
+        this.canvas.onmousemove = (e: MouseEvent) => {
+            this.refreshMouseCoord(e);
+            callback(e);
+        };
+    }
+
+    private getGridCoordsFromMouseCoords(mouseX: number, mouseY: number): Position | null {
+        const x = Math.floor((mouseX - this.mx) / this.d);
+        const y = Math.floor((mouseY - this.my) / this.d);
+
+        if (x < 0 || x >= this.grid.length || y < 0 || y >= this.grid[0].length) {
+            return null;
+        }
+
+        return { x, y };
+    }
+
+    private handleMouseDown(): void {
+        this.onCellClicked && this.handleMouseAction(this.onCellClicked);
+    }
+
+    private handleMouseHover(): void {
+        this.onCellHover && this.handleMouseAction(this.onCellHover);
+    }
+
+    private handleMouseAction(callback: (x: number, y: number) => void): void {
+        const mouseCoords = this.getGridCoordsFromMouseCoords(this.mouseX, this.mouseY);
+        if (!mouseCoords) return;
+        const { x, y } = mouseCoords;
+
+        callback(x, y);
+        this.isRenderNeed = true;
     }
 }

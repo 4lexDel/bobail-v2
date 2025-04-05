@@ -1,19 +1,31 @@
 import { CanvasGameBase } from "./CanvasGameBase";
 
 export class CanvasGame extends CanvasGameBase {
-    private pieceHexaColor: string[] = [];
-    private flagHexaColor: string[] = [];
     private colorBackground: string = "rgb(120, 120, 120)";
+    private pieceHexaColor = [
+        "#fd0d34", // red
+        "#3c8bda", // neutral blue
+        "#ffbe33", // golden
+        "#179374", // neutral green
+        "#99abc2", // grey
+    ];
 
-    private flagGrid: number[][] = Array.from({ length: 5 }, () => Array(5).fill(0));
+    public static readonly MOVE_AVAILABLE = 1;
+    public static readonly PIECE_SELECTED = 2;
+    public static readonly HOVER = 3;
+    private flagHexaColor = [
+        { persistent: true, zIndex: 1, hexaColor: "#a8a8a8" }, // Move available
+        { persistent: true, zIndex: 2, hexaColor: "#ffcc4f" }, // Piece selected
+        { persistent: false, zIndex: -1, hexaColor: "#888888" }, // Hover
+    ];
 
-    public onCellClicked!: (x: number, y: number) => void;
+    private flagGrid!: number[][];
 
     public constructor(canvas: HTMLCanvasElement, grid: number[][]) {
         super(canvas, grid);
         this.grid = grid;
         this.resetFlagGrid();
-        this.init(grid);
+        this.init();
     }
 
     public setGrid(grid: number[][]): void {
@@ -22,89 +34,41 @@ export class CanvasGame extends CanvasGameBase {
         this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
     }
 
-    public resetFlagGrid(): void {
-        this.flagGrid = Array.from({ length: 5 }, () => Array(5).fill(0));
+    public resetFlagGrid(clearPersistent = true): void {
+        (clearPersistent || !this.flagGrid) && (this.flagGrid = new Array(this.grid.length).fill(0).map(() => new Array(this.grid[0].length).fill(0)));
+
+        for (let x = 0; x < this.grid.length; x++) {
+            for (let y = 0; y < this.grid[0].length; y++) {
+                if (this.flagGrid[x][y] !== 0 && !this.flagHexaColor[this.flagGrid[x][y] - 1].persistent) {
+                    this.flagGrid[x][y] = 0;
+                }
+            }
+        }
         this.isRenderNeed = true;
-    } 
+    }
 
-    private init(grid: number[][]): void {
-        this.pieceHexaColor = [
-            "#fd0d34", // red
-            "#3c8bda", // neutral blue
-            "#ffbe33", // golden
-            "#179374", // neutral green
-            "#99abc2", // grey
-        ];
-        this.flagHexaColor = [
-            "#a8a8a8", // Move available
-            "#ffcc4f", // Piece selected
-        ];
-
-        this.grid = grid;
-
-        /*----------------Draw settings----------*/
-        this.FPS = 20;
-        this.prevTick = 0;
-
+    private init(): void {
         /**---------------START----------------- */
-        this.isRenderNeed = true;
-        this.draw();
-
+        this.render();
         this.initEvent();
     }
 
-    private initEvent(): void {
-        this.onMouseDown(() => this.mouseAction());
-    }
-
-    private mouseAction(): void {
-        const x = Math.floor((this.mouseX - this.mx) / this.d);
-        const y = Math.floor((this.mouseY - this.my) / this.d);
-
-        if (x < 0 || x >= this.grid.length || y < 0 || y >= this.grid[0].length) {
-            return;
-        }
-
-        this.updateCell(x, y);
-    }
-
-    private updateCell(x: number, y: number): void {
-        this.onCellClicked(x, y);
-
-        this.isRenderNeed = true;
-    }
-
-    private draw(): void {
-        /*------------------------------FPS-----------------------------*/
-        window.requestAnimationFrame(() => this.draw());
-
-        const now = Math.round(this.FPS * Date.now() / 1000);
-        if (now === this.prevTick) return;
-        this.prevTick = now;
-        /*--------------------------RENDER------------------------------*/
-        if (!this.isRenderNeed) return; // Use to avoid too much rendering
-        
-        this.drawProcess();
-    }
-
-    private drawProcess(): void {
+    protected override draw(): void {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.displayGrid();
 
         this.isRenderNeed = false;
     }
 
-    public drawFlagGrid({ origin, flagPositions }: { origin: { x: number; y: number }; flagPositions: { x: number; y: number }[] }): void {
-        this.resetFlagGrid();
-
+    public editFlagGrid(flagPositions: { x: number; y: number }[], flagId: number): void {
+        this.resetFlagGrid(false);
         for (let i = 0; i < flagPositions.length; i++) {
             const flagPosition = flagPositions[i];
-            this.flagGrid[flagPosition.x][flagPosition.y] = 1;
+
+            // z-index priority
+            const isNewFlagAllowed = this.flagGrid[flagPosition.x][flagPosition.y] == 0 || this.flagHexaColor[flagId - 1].zIndex > this.flagHexaColor[this.flagGrid[flagPosition.x][flagPosition.y] - 1].zIndex;
+            if (isNewFlagAllowed) this.flagGrid[flagPosition.x][flagPosition.y] = flagId;
         }
-
-        this.flagGrid[origin.x][origin.y] = 2;
-
-        this.isRenderNeed = true;
     }
 
     private displayGrid(): void {
@@ -118,7 +82,7 @@ export class CanvasGame extends CanvasGameBase {
 
     private displayCell(x: number, y: number): void {
         if (this.flagGrid[x][y] !== 0) {
-            this.ctx.fillStyle = this.flagHexaColor[this.flagGrid[x][y] - 1];
+            this.ctx.fillStyle = this.flagHexaColor[this.flagGrid[x][y] - 1].hexaColor;
             this.ctx.fillRect(this.mx + x * this.d, this.my + y * this.d, this.d, this.d);
             this.displayCellBorder(this.mx + x * this.d, this.my + y * this.d, this.d);
         }
@@ -130,7 +94,7 @@ export class CanvasGame extends CanvasGameBase {
     }
 
     private displayPiece(x: number, y: number): void {
-        if(this.grid[x][y] === 0) return;
+        if (this.grid[x][y] === 0) return;
 
         this.ctx.fillStyle = this.pieceHexaColor[this.grid[x][y] - 1];
         this.ctx.beginPath();
