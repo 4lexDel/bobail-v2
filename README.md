@@ -27,7 +27,8 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 - Free flag on right click
 - Display previous move(s)
 - Animation (pieces movement)
-- Add a tutorial modal (at least the rules of the game)
+- Add a tutorial modal (at least the rules of the game) !!
+- Reuse the services
 
 - Settings:
     * AI level
@@ -35,6 +36,9 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
     * Player 1 or 2
 
 - Update the URL to directly access to a game
+- Improve side hovevr effect
+- Restart button
+
 
 ## Bugs & clean
 prevent bobailPosition undefined to refacto

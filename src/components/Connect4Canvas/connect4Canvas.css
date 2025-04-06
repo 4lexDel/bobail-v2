@@ -1,0 +1,14 @@
+.background {
+    position: fixed;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
+.container {
+    flex: 1;
+    max-height: 100%;
+}

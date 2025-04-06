@@ -1,37 +1,85 @@
-import { Player } from "../../utils/models";
-import { State } from "./Connect4MontecarloImplementation";
-
 export default class Connect4Service {
-    public static ROWS = 6;
-    public static COLS = 7;
+  public static checkGameOver(grid: number[][], currentPlayer: number): number | null {
+    // Check for horizontal, vertical, and diagonal wins
+    if (this.checkWin(grid, currentPlayer)) {
+      return currentPlayer;
+    } else if (this.isGridFull(grid)) {
+      return 0; // Draw
+    }
+    return null; // Game not over
+  }
 
-    public static checkDirection(board: number[][], row: number, col: number, dRow: number, dCol: number, player: Player): boolean {
-        for (let i = 0; i < 4; i++) {
-          const r = row + i * dRow;
-          const c = col + i * dCol;
-          if (r < 0 || r >= Connect4Service.ROWS || c < 0 || c >= Connect4Service.COLS || board[r][c] !== player) {
-            return false;
-          }
-        }
-        return true;
-      }
+  public static checkWin(grid: number[][], currentPlayer: number): boolean {
+    // Check horizontal, vertical, and diagonal wins
+    return (
+      this.checkHorizontalWin(grid, currentPlayer) ||
+      this.checkVerticalWin(grid, currentPlayer) ||
+      this.checkDiagonalWin(grid, currentPlayer)
+    );
+  }
 
-      public static getWinner(state: State): Player | 0 {
-        for (let row = 0; row < Connect4Service.ROWS; row++) {
-          for (let col = 0; col < Connect4Service.COLS; col++) {
-            const player = state.board[row][col];
-            if (player !== 0) {
-              if (
-                Connect4Service.checkDirection(state.board, row, col, 1, 0, player) ||
-                Connect4Service.checkDirection(state.board, row, col, 0, 1, player) ||
-                Connect4Service.checkDirection(state.board, row, col, 1, 1, player) ||
-                Connect4Service.checkDirection(state.board, row, col, 1, -1, player)
-              ) {
-                return player;
-              }
-            }
-          }
+  public static checkDiagonalWin(grid: number[][], currentPlayer: number): boolean {
+    // Check for diagonal wins (bottom-left to top-right and bottom-right to top-left)
+    for (let col = 0; col < 4; col++) {
+      for (let row = 0; row < 3; row++) {
+        if (
+          grid[col][row] === currentPlayer &&
+          grid[col + 1][row + 1] === currentPlayer &&
+          grid[col + 2][row + 2] === currentPlayer &&
+          grid[col + 3][row + 3] === currentPlayer
+        ) {
+          return true;
         }
-        return 0;
       }
+    }
+    for (let col = 3; col < 7; col++) {
+      for (let row = 0; row < 3; row++) {
+        if (
+          grid[col][row] === currentPlayer &&
+          grid[col - 1][row + 1] === currentPlayer &&
+          grid[col - 2][row + 2] === currentPlayer &&
+          grid[col - 3][row + 3] === currentPlayer
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public static checkVerticalWin(grid: number[][], currentPlayer: number): boolean {
+    for (let col = 0; col < 7; col++) {
+      for (let row = 0; row < 3; row++) {
+        if (
+          grid[col][row] === currentPlayer &&
+          grid[col][row + 1] === currentPlayer &&
+          grid[col][row + 2] === currentPlayer &&
+          grid[col][row + 3] === currentPlayer
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public static checkHorizontalWin(grid: number[][], currentPlayer: number): boolean {
+    for (let row = 0; row < 6; row++) {
+      for (let col = 0; col < 4; col++) {
+        if (
+          grid[col][row] === currentPlayer &&
+          grid[col + 1][row] === currentPlayer &&
+          grid[col + 2][row] === currentPlayer &&
+          grid[col + 3][row] === currentPlayer
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public static isGridFull(grid: number[][]): boolean {
+    return grid.every(column => column.every(cell => cell !== 0));
+  }
 }

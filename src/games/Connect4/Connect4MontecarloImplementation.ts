@@ -1,15 +1,14 @@
 import { Macao } from "macao";
 import { Player } from "../../utils/models";
 import Connect4Service from "./Connect4Service";
-
-type Cell = 0 | Player;
+import { Cell } from "./Connect4Game";
 
 export type State = {
   board: Cell[][];
   player: Player;
 };
 
-type Action = { column: number };
+export type Action = { column: number };
 
 export default class Connect4MonteCarlo {
   constructor() {}
@@ -22,32 +21,49 @@ export default class Connect4MonteCarlo {
       calculateReward: this.calculateReward,
     };
 
-    const config = { duration: 5000 };
+    const config = { duration: 2500 };
     const macao = new Macao<State, Action>(funcs, config);
     return macao.getAction({ board, player });
   }
 
   generateActions(state: State): Action[] {
-    return state.board[0].map((_, col) => (state.board[0][col] === 0 ? { column: col } : null)).filter(Boolean) as Action[];
+    const actions: Action[] = [];
+    for (let col = 0; col < 7; col++) {
+      if (state.board[col][0] === 0) {
+        actions.push({ column: col });
+      }
+    }
+    return actions;
   }
 
   applyAction(state: State, action: Action): State {
-    const newBoard = state.board.map((row) => [...row]);
-    for (let row = Connect4Service.ROWS - 1; row >= 0; row--) {
-      if (newBoard[row][action.column] === 0) {
-        newBoard[row][action.column] = state.player;
+    const newState = { ...state };
+
+    if(action.column < 0 || action.column >= 7) return newState;
+
+    const column = action.column;
+    for (let row = 5; row >= 0; row--) {
+      if (newState.board[column][row] === 0) {
+        newState.board[column][row] = newState.player;
         break;
       }
     }
-    return { board: newBoard, player: (state.player * -1) as Player };
+    newState.player = newState.player === 1 ? 2 : 1;
+    return newState;
   }
 
   stateIsTerminal(state: State): boolean {
-    return Connect4Service.getWinner(state) !== 0 || this.generateActions(state).length === 0;
+    return Connect4Service.checkWin(state.board, 1) || Connect4Service.checkWin(state.board, 2) || Connect4Service.isGridFull(state.board);
   }
 
   calculateReward(state: State, player: number): number {
-    const winner = Connect4Service.getWinner(state);
-    return winner === player ? 1 : winner === -player ? -1 : 0;
+    if (Connect4Service.checkWin(state.board, player)) {
+      return 1; // Win
+    } else if (Connect4Service.checkWin(state.board, player === 1 ? 2 : 1)) {
+      return -1; // Loss
+    } else if (Connect4Service.isGridFull(state.board)) {
+      return 0; // Draw
+    }
+    return 0; // Not terminal state
   }
 }
