@@ -28,7 +28,7 @@ const Connect4Canvas = () => {
         game.onCellHover = handleCellHover;
     }, []);
 
-    const handleCellHover = (x: number, y: number) => {
+    const handleCellHover = (x: number, _: number) => {
         const column = Array.from({ length: 6 }, (_, i) => ({ x, y: i }));
         game.resetFlagGrid();
         game.editFlagGrid(column, CanvasGame.HOVER);
