@@ -37,33 +37,29 @@ export default class Connect4MonteCarlo {
   }
 
   applyAction(state: State, action: Action): State {
-    const newState = { ...state };
+    const newBoard = state.board.map(col => [...col]);
 
-    if(action.column < 0 || action.column >= 7) return newState;
+    if(action.column < 0 || action.column >= 7) return state;
 
     const column = action.column;
     for (let row = 5; row >= 0; row--) {
-      if (newState.board[column][row] === 0) {
-        newState.board[column][row] = newState.player;
+      if (newBoard[column][row] === 0) {
+        newBoard[column][row] = state.player;
         break;
       }
     }
-    newState.player = newState.player === 1 ? 2 : 1;
-    return newState;
+    return { board: newBoard, player: state.player === 1 ? 2 : 1 };
   }
 
   stateIsTerminal(state: State): boolean {
-    return Connect4Service.isGridFull(state.board) || Connect4Service.checkWin(state.board, 1) || Connect4Service.checkWin(state.board, 2);
+    return (Connect4Service.isGridFull(state.board) || Connect4Service.checkWin(state.board, 1) || Connect4Service.checkWin(state.board, 2));
   }
 
   calculateReward(state: State, player: number): number {    
-    if (Connect4Service.checkWin(state.board, player)) {
-      return 1; // Win
-    } else if (Connect4Service.checkWin(state.board, player === 1 ? 2 : 1)) {
-      return -1; // Loss
-    } else if (Connect4Service.isGridFull(state.board)) {
-      return 0; // Draw
-    }
+    if (Connect4Service.checkWin(state.board, player)) return -1; // Win
+    if (Connect4Service.checkWin(state.board, player === 1 ? 2 : 1)) return 1; // Loss
+    if (Connect4Service.isGridFull(state.board)) return 0; // Draw
+    
     return 0; // Not terminal state
   }
 }
