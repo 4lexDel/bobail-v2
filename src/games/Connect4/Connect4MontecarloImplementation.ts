@@ -13,7 +13,7 @@ export type Action = { column: number };
 export default class Connect4MonteCarlo {
   constructor() {}
 
-  findBestMove(board: Cell[][], player: Player): Promise<Action> {
+  findBestMove(gamePosition: Cell[][], player: Player): Promise<Action> {
     const funcs = {
       generateActions: this.generateActions,
       applyAction: this.applyAction,
@@ -21,9 +21,9 @@ export default class Connect4MonteCarlo {
       calculateReward: this.calculateReward,
     };
 
-    const config = { duration: 2500 };
+    const config = { duration: 5000 };
     const macao = new Macao<State, Action>(funcs, config);
-    return macao.getAction({ board, player });
+    return macao.getAction({ board: gamePosition.map((col) => [...col]), player });
   }
 
   generateActions(state: State): Action[] {
@@ -53,10 +53,10 @@ export default class Connect4MonteCarlo {
   }
 
   stateIsTerminal(state: State): boolean {
-    return Connect4Service.checkWin(state.board, 1) || Connect4Service.checkWin(state.board, 2) || Connect4Service.isGridFull(state.board);
+    return Connect4Service.isGridFull(state.board) || Connect4Service.checkWin(state.board, 1) || Connect4Service.checkWin(state.board, 2);
   }
 
-  calculateReward(state: State, player: number): number {
+  calculateReward(state: State, player: number): number {    
     if (Connect4Service.checkWin(state.board, player)) {
       return 1; // Win
     } else if (Connect4Service.checkWin(state.board, player === 1 ? 2 : 1)) {

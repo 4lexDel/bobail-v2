@@ -13,14 +13,14 @@ export default class Connect4Game {
     }
 
     public initGame(): void {
-        this.grid = this.initializeGrid();
+        this.initializeGrid();
         this.currentPlayer = 1;
 
         this.winner = null;
     }
 
-    private initializeGrid(): Cell[][] {
-        return Array.from({ length: 7 }, () => Array(6).fill(0));
+    private initializeGrid(): void {
+        this.grid = Array.from({ length: 7 }, () => Array(6).fill(0));
     }
 
     public getGrid() {

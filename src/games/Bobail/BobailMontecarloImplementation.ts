@@ -38,7 +38,7 @@ export default class BobailMontecarloImplementation {
 
         const macao = new Macao<State, Action>(funcs, config);
         
-        return macao.getAction({ board: gamePosition, player: currentPlayer });
+        return macao.getAction({ board: gamePosition.map(row => [...row]), player: currentPlayer });
     }
 
     generateActions(state: State): Action[] {

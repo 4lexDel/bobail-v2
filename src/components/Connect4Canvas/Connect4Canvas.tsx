@@ -34,7 +34,7 @@ const Connect4Canvas = () => {
         game.editFlagGrid(column, CanvasGame.HOVER);
     }
 
-    const handleCellClick = (x: number, _: number) => {     // TO COMPLETE
+    const handleCellClick = (x: number, _: number) => {
         if (isAlgorithmProcessing || connect4Game.isGameOver()) return;
         game.resetFlagGrid();
 
@@ -44,7 +44,7 @@ const Connect4Canvas = () => {
         }
     };
 
-    const processMove = (column: number) => {     // TO COMPLETE
+    const processMove = (column: number) => {
         if (connect4Game.movePiece(column)) {
             setBackgroundColor(connect4Game.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
             updateGameGrid(connect4Game.getGrid());
@@ -54,7 +54,7 @@ const Connect4Canvas = () => {
                 newWorker.onmessage = (event) => {
                     // AI answer
                     handleWorkerOnMessage(event);
-                }
+                }               
 
                 isAlgorithmProcessing = true;
                 newWorker.postMessage({ grid: connect4Game.getGrid(), player: connect4Game.getCurrentPlayer() });
@@ -64,7 +64,7 @@ const Connect4Canvas = () => {
         checkWinner();
     };
 
-    const handleWorkerOnMessage = (event: MessageEvent<any>) => {     // TO COMPLETE
+    const handleWorkerOnMessage = (event: MessageEvent<any>) => {
         const { nextAction }: { nextAction: Action } = event.data;
 
         if (nextAction) {
@@ -77,7 +77,7 @@ const Connect4Canvas = () => {
         }
     }
 
-    const processAiPostMove = () => {     // TO COMPLETE
+    const processAiPostMove = () => {
         setBackgroundColor(connect4Game.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
         isAlgorithmProcessing = false;
 
@@ -90,12 +90,12 @@ const Connect4Canvas = () => {
         newWorker = createWorker();
     }
 
-    const updateGameGrid = (newGrid: Cell[][]) => {     // TO COMPLETE
+    const updateGameGrid = (newGrid: Cell[][]) => {
         connect4Game.setGrid(newGrid);
         game.setGrid(newGrid);
     }
 
-    const checkWinner = () => {     // TO COMPLETE
+    const checkWinner = () => {
         if (!connect4Game.isGameOver()) return false; 
 
         const message = connect4Game.getWinner() === 0 ? "This game is a draw!" : `Player ${connect4Game.getWinner()} has won!`;

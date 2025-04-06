@@ -39,7 +39,12 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 - Improve side hovevr effect
 - Restart button
 
+- Rename the whole project (because the scope is bigger)
+
 
 ## Bugs & clean
 prevent bobailPosition undefined to refacto
 Clean the game base to include the draw logic
+
+## Great explanations of MCTS
+https://github.com/Gualor/connect4-montecarlo
