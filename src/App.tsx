@@ -3,6 +3,7 @@ import './app.css'
 import Header, { GameTitle, Settings } from './components/Header/Header';
 import BobailCanvas from './components/BobailCanvas/BobailCanvas';
 import Connect4Canvas from './components/Connect4Canvas/Connect4Canvas';
+import GameControl from './components/GameControl/GameControl';
 
 function App() {
   const [gameSelected, setGameSelected] = useState("bobail");
@@ -24,6 +25,7 @@ function App() {
     <>
     <div className="main">
       <Header onGameChange={handleOnGameChange} onSettingsChange={handleSettingsChange}/>
+      <GameControl/>
       {gameSelected === "bobail" && <BobailCanvas settings={settings}/>}
       {gameSelected === "connect-four" && <Connect4Canvas settings={settings}/>}
       {gameSelected === "abalone" && <h1>Abalone coming soon...</h1>}
