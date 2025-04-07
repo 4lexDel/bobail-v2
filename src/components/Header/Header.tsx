@@ -10,7 +10,7 @@ export type Settings = {
 }
 
 function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: GameTitle) => void, onSettingsChange: (value: Settings) => void }) {
-  const [rangeValue, setRangeValue] = useState<number>(5000);
+  const [selectedRangeValue, setSelectedRangeValue] = useState<number>(5000);
   const [selectedPlayer, setSelectedPlayer] = useState<string>('1');
 
   let rangeInput!: HTMLInputElement;
@@ -28,7 +28,7 @@ function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: Game
         type="number"
         min="100"
         max="10000"
-        value="${rangeValue}"
+        value="${selectedRangeValue}"
         step="${100}"
         class="swal2-input"
         id="range-value" 
@@ -45,19 +45,21 @@ function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: Game
         radioInputs = Array.from(Swal.getPopup()!.querySelectorAll('input[name="player"]')) as HTMLInputElement[];
       }
     }).then((result) => {     
+      let rangeValue = parseInt(rangeInput.value);
+      let playerValue!: Player;
+
+      radioInputs.forEach((radio) => {
+        if ((radio as HTMLInputElement)?.checked) {
+          playerValue = (radio as HTMLInputElement).value as unknown as Player;
+        }
+      });
+
+      if(rangeValue === selectedRangeValue && playerValue === parseInt(selectedPlayer)) return;
+
       if (result.isConfirmed) {
         Swal.fire("Saved!", "", "success");
 
-        let rangeValue = parseInt(rangeInput.value);
-        let playerValue!: Player;
-
-        radioInputs.forEach((radio) => {
-          if ((radio as HTMLInputElement)?.checked) {
-            playerValue = (radio as HTMLInputElement).value as unknown as Player;
-          }
-        });
-
-        setRangeValue(rangeValue);
+        setSelectedRangeValue(rangeValue);
         setSelectedPlayer(playerValue.toString());
 
         onSettingsChange({
