@@ -35,9 +35,9 @@ function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: Game
         placeholder="milliseconds">
         <br/>
         <br/>
-        <input type="radio" name="player" id="player1" value="1" ${selectedPlayer === "1" ? 'checked' : ''}>
+        <input type="radio" name="player" id="player1" value="1" ${selectedPlayer === "1" ? 'checked' : ''} disabled="true">
         <label for="player1"> Player 1</label>
-        <input type="radio" name="player" id="player2" value="2" ${selectedPlayer === "2" ? 'checked' : ''}>
+        <input type="radio" name="player" id="player2" value="2" ${selectedPlayer === "2" ? 'checked' : ''} disabled="true">
         <label for="player2"> Player 2</label>
       `,
       didOpen: () => {
