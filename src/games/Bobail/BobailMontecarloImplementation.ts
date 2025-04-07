@@ -19,11 +19,7 @@ export default class BobailMontecarloImplementation {
     constructor() {
     }
 
-    findBestMove(gamePosition: Cell[][], currentPlayer: Player): Promise<Action> {       
-        // const startTime = performance.now();
-
-        // const endTime = performance.now();
-        // console.log(`Execution time: ${endTime - startTime} ms`);
+    findBestMove(gamePosition: Cell[][], currentPlayer: Player, reflexionTime: number): Promise<Action> {
         const funcs: Func = {
             generateActions: this.generateActions,
             applyAction: this.applyAction,
@@ -31,10 +27,7 @@ export default class BobailMontecarloImplementation {
             calculateReward: this.calculateReward
         };
 
-        const config = {
-            duration: 5000
-            // ...
-        };
+        const config = { duration: reflexionTime };
 
         const macao = new Macao<State, Action>(funcs, config);
         

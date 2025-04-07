@@ -5,13 +5,14 @@ import { CanvasGame } from '../../utils/canvas/CanvasGame';
 import BobailGame, { Cell } from '../../games/Bobail/BobailGame';
 import { Position } from '../../utils/models';
 import { Action } from '../../games/Bobail/BobailMontecarloImplementation';
+import { Settings } from '../Header/Header';
 
 const createWorker = () => new Worker(
     new URL('../../workers/bobail.worker.js', import.meta.url),
     { type: 'module' }
 );
 
-const BobailCanvas = () => {
+const BobailCanvas = ({ settings }: { settings: Settings }) => {
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
@@ -23,6 +24,8 @@ const BobailCanvas = () => {
     let firstMove: Position | null = null;
 
     let isAlgorithmProcessing = false;
+
+    const reflexionTimeRef = useRef<number>(settings.reflexionTime);
 
     useEffect(() => {
         if (!canvasRef.current) return;
@@ -58,6 +61,10 @@ const BobailCanvas = () => {
         }
     };
 
+    useEffect(() => {
+        reflexionTimeRef.current = settings.reflexionTime;
+    }, [settings]);
+
     const processMove = (cellSelected: Position) => {
         if (bobailGame.getBobailMoved() && firstMove) {
             if (bobailGame.movePiece(firstMove, cellSelected)) {
@@ -72,7 +79,8 @@ const BobailCanvas = () => {
                     }
                     
                     isAlgorithmProcessing = true;
-                    newWorker.postMessage({ grid: bobailGame.getGrid(), player: bobailGame.getCurrentPlayer() });
+                    
+                    newWorker.postMessage({ grid: bobailGame.getGrid(), player: bobailGame.getCurrentPlayer(), reflexionTime: reflexionTimeRef.current });
                 }
             }
         } else {

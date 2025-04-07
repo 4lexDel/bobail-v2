@@ -30,12 +30,11 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 - Add a tutorial modal (at least the rules of the game) !!
 - Reuse the services
 
+- Update the URL to directly access to a game
 - Settings:
     * AI level
     * Rules
     * Player 1 or 2
-
-- Update the URL to directly access to a game
 - Improve side hovevr effect
 - Restart button
 

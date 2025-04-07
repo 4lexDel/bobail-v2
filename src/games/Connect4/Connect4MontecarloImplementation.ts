@@ -13,7 +13,7 @@ export type Action = { column: number };
 export default class Connect4MonteCarlo {
   constructor() {}
 
-  findBestMove(gamePosition: Cell[][], player: Player): Promise<Action> {
+  findBestMove(gamePosition: Cell[][], player: Player, reflexionTime: number): Promise<Action> {   
     const funcs = {
       generateActions: this.generateActions,
       applyAction: this.applyAction,
@@ -21,7 +21,7 @@ export default class Connect4MonteCarlo {
       calculateReward: this.calculateReward,
     };
 
-    const config = { duration: 5000 };
+    const config = { duration: reflexionTime };
     const macao = new Macao<State, Action>(funcs, config);
     return macao.getAction({ board: gamePosition.map((col) => [...col]), player });
   }

@@ -4,13 +4,14 @@ import Swal from 'sweetalert2';
 import { CanvasGame } from '../../utils/canvas/CanvasGame';
 import Connect4Game, { Cell } from '../../games/Connect4/Connect4Game';
 import { Action } from '../../games/Connect4/Connect4MontecarloImplementation';
+import { Settings } from '../Header/Header';
 
 const createWorker = () => new Worker(
     new URL('../../workers/connect4.worker.js', import.meta.url),
     { type: 'module' }
 );
 
-const Connect4Canvas = () => {
+const Connect4Canvas = ({ settings }: { settings: Settings }) => {
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
@@ -20,6 +21,8 @@ const Connect4Canvas = () => {
     let newWorker: Worker | null = null;
 
     let isAlgorithmProcessing = false;
+
+    const reflexionTimeRef = useRef<number>(settings.reflexionTime);
 
     useEffect(() => {
         if (!canvasRef.current) return;
@@ -44,6 +47,10 @@ const Connect4Canvas = () => {
         }
     };
 
+    useEffect(() => {
+        reflexionTimeRef.current = settings.reflexionTime;
+    }, [settings]);
+
     const processMove = (column: number) => {
         if (connect4Game.movePiece(column)) {
             setBackgroundColor(connect4Game.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
@@ -57,7 +64,7 @@ const Connect4Canvas = () => {
                 }               
 
                 isAlgorithmProcessing = true;
-                newWorker.postMessage({ grid: connect4Game.getGrid(), player: connect4Game.getCurrentPlayer() });
+                newWorker.postMessage({ grid: connect4Game.getGrid(), player: connect4Game.getCurrentPlayer(), reflexionTime: reflexionTimeRef.current });
             }
         }
         

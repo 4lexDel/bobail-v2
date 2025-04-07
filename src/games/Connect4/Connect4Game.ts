@@ -21,6 +21,7 @@ export default class Connect4Game {
 
     private initializeGrid(): void {
         this.grid = Array.from({ length: 7 }, () => Array(6).fill(0));
+        // this.grid[3][5] = 2;
     }
 
     public getGrid() {

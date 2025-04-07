@@ -5,11 +5,11 @@ import BobailMontecarloImplementation from "../games/Bobail/BobailMontecarloImpl
 import { Player } from "../utils/models";
 
 onmessage = async(event) => {
-  const { grid, player }: { grid: Cell[][], player: Player } = event.data;
+  const { grid, player, reflexionTime }: { grid: Cell[][], player: Player, reflexionTime: number } = event.data;
   
   const bobailAlgorithm = new BobailMontecarloImplementation();
 
-  const nextAction = await bobailAlgorithm.findBestMove(grid, player);
+  const nextAction = await bobailAlgorithm.findBestMove(grid, player, reflexionTime);
 
   postMessage({ nextAction });
 };
