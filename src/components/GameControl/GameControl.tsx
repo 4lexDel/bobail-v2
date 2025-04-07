@@ -1,16 +1,38 @@
 import Swal from 'sweetalert2';
 import './gameControl.css';
+import { useState } from 'react';
+import { Player } from '../../utils/models';
 
-const GameControl = ({ onRestartClicked }: { onRestartClicked: () => void }) => {
+const GameControl = ({ onRestartClicked }: { onRestartClicked: (playerValue: Player) => void }) => {
+    const [selectedPlayer, setSelectedPlayer] = useState<string>('1');
+
+    let radioInputs!: HTMLInputElement[];
+
     const handleRestartClick = () => {
         Swal.fire({
             title: "Restart the game?",
             showDenyButton: true,
             confirmButtonText: "Yes",
-            denyButtonText: `No`
+            denyButtonText: `No`,
+            html: `
+                <input type="radio" name="player" id="player1" value="1" ${selectedPlayer === "1" ? 'checked' : ''} disabled="true">
+                <label for="player1"> Player 1</label>
+                <input type="radio" name="player" id="player2" value="2" ${selectedPlayer === "2" ? 'checked' : ''} disabled="true">
+                <label for="player2"> Player 2</label>
+                </div>`,
+            didOpen: () => {
+                radioInputs = Array.from(Swal.getPopup()!.querySelectorAll('select[name="player"]')) as HTMLInputElement[];
+            }
         }).then((result) => {
             if (result.isConfirmed) {
-                onRestartClicked();
+                let playerValue!: string;
+                radioInputs.forEach((radio) => {
+                    if ((radio as HTMLInputElement)?.checked) {
+                        playerValue = (radio as HTMLInputElement).value;
+                    }
+                });
+                setSelectedPlayer(playerValue);
+                onRestartClicked(parseInt(playerValue) as Player);
             }
         });
     }

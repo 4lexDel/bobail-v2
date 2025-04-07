@@ -1,20 +1,13 @@
 import Swal from 'sweetalert2';
 import './header.css'
 import { useState } from 'react';
-import { Player } from '../../utils/models';
 
 export type GameTitle = "bobail" | "connect-four" | "abalone" | "othello";
-export type Settings = {
-  reflexionTime: number;
-  player: Player;
-}
 
-function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: GameTitle) => void, onSettingsChange: (value: Settings) => void }) {
+function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: GameTitle) => void, onSettingsChange: (value: number) => void }) {
   const [selectedRangeValue, setSelectedRangeValue] = useState<number>(5000);
-  const [selectedPlayer, setSelectedPlayer] = useState<string>('1');
 
   let rangeInput!: HTMLInputElement;
-  let radioInputs!: HTMLInputElement[];
 
   const handleSettingsClick = () => {
     Swal.fire({
@@ -33,39 +26,21 @@ function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: Game
         class="swal2-input"
         id="range-value" 
         placeholder="milliseconds">
-        <br/>
-        <br/>
-        <input type="radio" name="player" id="player1" value="1" ${selectedPlayer === "1" ? 'checked' : ''} disabled="true">
-        <label for="player1"> Player 1</label>
-        <input type="radio" name="player" id="player2" value="2" ${selectedPlayer === "2" ? 'checked' : ''} disabled="true">
-        <label for="player2"> Player 2</label>
       `,
       didOpen: () => {
         rangeInput = Swal.getPopup()!.querySelector('#range-value') as HTMLInputElement;
-        radioInputs = Array.from(Swal.getPopup()!.querySelectorAll('input[name="player"]')) as HTMLInputElement[];
       }
     }).then((result) => {     
       let rangeValue = parseInt(rangeInput.value);
-      let playerValue!: Player;
-
-      radioInputs.forEach((radio) => {
-        if ((radio as HTMLInputElement)?.checked) {
-          playerValue = (radio as HTMLInputElement).value as unknown as Player;
-        }
-      });
-
-      if(rangeValue === selectedRangeValue && playerValue === parseInt(selectedPlayer)) return;
+          
+      if(rangeValue === selectedRangeValue) return;
 
       if (result.isConfirmed) {
         Swal.fire("Saved!", "", "success");
 
         setSelectedRangeValue(rangeValue);
-        setSelectedPlayer(playerValue.toString());
 
-        onSettingsChange({
-          reflexionTime: rangeValue,
-          player: playerValue
-        });
+        onSettingsChange(rangeValue);
       } else if (result.isDismissed) {
         Swal.fire("Changes are not saved", "", "info");
       }

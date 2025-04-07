@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import './app.css'
-import Header, { GameTitle, Settings } from './components/Header/Header';
+import Header, { GameTitle } from './components/Header/Header';
 import BobailCanvas from './components/BobailCanvas/BobailCanvas';
 import Connect4Canvas from './components/Connect4Canvas/Connect4Canvas';
 import GameControl from './components/GameControl/GameControl';
+import { Player } from './utils/models';
 
 function App() {
   const [gameSelected, setGameSelected] = useState("bobail");
-  const [settings, setSettings] = useState<Settings>({
-    reflexionTime: 5000,
-    player: 1
-  });
+  const [player, setPlayer] = useState<Player>(1);
+  const [reflexionTime, setReflexionTime] = useState<number>(5000);
   const [refresh, setRefresh] = useState(true);
 
   useEffect(() => {
@@ -30,12 +29,14 @@ function App() {
     window.history.pushState({}, '', url);
   }
 
-  const handleSettingsChange = (value: Settings) => {   
-    setSettings(value);
+  const handleSettingsChange = (value: number) => {   
+    setReflexionTime(value);
   }
 
-  const handleOnRestartClicked = () => {
+  const handleOnRestartClicked = (playerValue: Player) => {
     // Little trick used to reset the game components
+    setPlayer(playerValue);
+    
     setRefresh(false);
     setTimeout(() => {
       setRefresh(true);
@@ -50,8 +51,8 @@ function App() {
       <GameControl onRestartClicked={handleOnRestartClicked}/>
       {refresh && (
         <>
-        {gameSelected === "bobail" && <BobailCanvas settings={settings}/>}
-        {gameSelected === "connect-four" && <Connect4Canvas settings={settings}/>}
+        {gameSelected === "bobail" && <BobailCanvas reflexionTime={reflexionTime} player={player}/>}
+        {gameSelected === "connect-four" && <Connect4Canvas reflexionTime={reflexionTime} player={player}/>}
         {gameSelected === "abalone" && <h1>Abalone coming soon...</h1>}
         {gameSelected === "othello" && <h1>Othello coming soon...</h1>}
         </>

@@ -4,14 +4,14 @@ import Swal from 'sweetalert2';
 import { CanvasGame } from '../../utils/canvas/CanvasGame';
 import Connect4Game, { Cell } from '../../games/Connect4/Connect4Game';
 import { Action } from '../../games/Connect4/Connect4MontecarloImplementation';
-import { Settings } from '../Header/Header';
+import { Player } from '../../utils/models';
 
 const createWorker = () => new Worker(
     new URL('../../workers/connect4.worker.js', import.meta.url),
     { type: 'module' }
 );
 
-const Connect4Canvas = ({ settings }: { settings: Settings }) => {
+const Connect4Canvas = ({ reflexionTime, player }: { reflexionTime: number, player: Player }) => {
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
@@ -22,7 +22,7 @@ const Connect4Canvas = ({ settings }: { settings: Settings }) => {
 
     let isAlgorithmProcessing = false;
 
-    const reflexionTimeRef = useRef<number>(settings.reflexionTime);
+    const reflexionTimeRef = useRef<number>(reflexionTime);
 
     useEffect(() => {
         if (!canvasRef.current) return;
@@ -48,12 +48,12 @@ const Connect4Canvas = ({ settings }: { settings: Settings }) => {
     };
 
     useEffect(() => {
-        reflexionTimeRef.current = settings.reflexionTime;
-    }, [settings]);
+        reflexionTimeRef.current = reflexionTime;
+    }, [reflexionTime]);
 
     const processMove = (column: number) => {
         if (connect4Game.movePiece(column)) {
-            setBackgroundColor(connect4Game.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
+            refreshBackgroundColor();
             updateGameGrid(connect4Game.getGrid());
 
             resetWorker();
@@ -85,11 +85,15 @@ const Connect4Canvas = ({ settings }: { settings: Settings }) => {
     }
 
     const processAiPostMove = () => {
-        setBackgroundColor(connect4Game.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
+        refreshBackgroundColor();
         isAlgorithmProcessing = false;
 
         connect4Game.checkGameOver();
         return checkWinner();
+    }
+
+    const refreshBackgroundColor = () => {
+        setBackgroundColor(connect4Game.getCurrentPlayer() === 1 ? "tomato" : "lightskyblue");
     }
 
     const resetWorker = () => {
