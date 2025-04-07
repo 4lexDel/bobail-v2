@@ -12,38 +12,28 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 
 ## Objectives
 - UX/UI friendly
-- Playe against a strong AI (MinMax)
-
-## Advancment
-- Architecture set
-- Beginning of the interface
+- Play against strong AIs (Monte Carlo Tree Search)
 
 
 ## TODO
-- Make more space to add a header while keeping the canvas responsive
-
 - Loading during the AI process
-
-- Free flag on right click
 - Display previous move(s)
+
 - Animation (pieces movement)
 - Add a tutorial modal (at least the rules of the game) !!
 - Reuse the services
 
-- Update the URL to directly access to a game
 - Settings:
     * AI level
     * Rules
     * Player 1 or 2
-- Improve side hovevr effect
-- Restart button
+- Improve side hover effect
 
 - Rename the whole project (because the scope is bigger)
 
 
 ## Bugs & clean
 prevent bobailPosition undefined to refacto
-Clean the game base to include the draw logic
 
 ## Great explanations of MCTS
 https://github.com/Gualor/connect4-montecarlo
