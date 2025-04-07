@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './app.css'
 import Header, { GameTitle } from './components/Header/Header';
 import BobailCanvas from './components/BobailCanvas/BobailCanvas';
@@ -9,10 +9,13 @@ import { Player } from './utils/models';
 function App() {
   const [gameSelected, setGameSelected] = useState("bobail");
   const [player, setPlayer] = useState<Player>(1);
-  const [reflexionTime, setReflexionTime] = useState<number>(5000);
   const [refresh, setRefresh] = useState(true);
+  
   const [aiProgress, setAiProgress] = useState(0);
-  const loaderNbStep = 5;
+  const loaderNbStep = 10;
+  
+  const [reflexionTime, setReflexionTime] = useState<number>(5000);
+  const reflexionTimeRef = useRef(5000);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -33,6 +36,7 @@ function App() {
 
   const handleSettingsChange = (value: number) => {
     setReflexionTime(value);
+    reflexionTimeRef.current = value;
   }
 
   const handleOnRestartClicked = (playerValue: Player) => {
@@ -54,18 +58,18 @@ function App() {
         if (step >= loaderNbStep) {
           clearInterval(interval);
           step = 0;
+          setAiProgress(0);
           return;
         }
 
         step++;
         setAiProgress(step);
-      }, reflexionTime / loaderNbStep);
+      }, reflexionTimeRef.current / loaderNbStep);
 
       console.log("start");
     }
     else {
       setAiProgress(0);
-      console.log("end");
     }
   }
 

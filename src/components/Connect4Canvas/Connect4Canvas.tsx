@@ -76,12 +76,14 @@ const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { r
         const { nextAction }: { nextAction: Action } = event.data;
         onAiProcessEnd();
 
-        connect4Game.movePiece(nextAction.column);
-        const grid = connect4Game.getGrid();
+        setTimeout(() => {
+            connect4Game.movePiece(nextAction.column);
+            const grid = connect4Game.getGrid();
 
-        updateGameGrid(grid);
+            updateGameGrid(grid);
 
-        processAiPostMove();
+            processAiPostMove();
+        }, 200);
     }
 
     const processAiPostMove = () => {

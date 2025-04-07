@@ -95,20 +95,22 @@ const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { ref
 
         const grid = bobailGame.getGrid();
 
-        grid[nextAction.bobailPosition.from.x][nextAction.bobailPosition.from.y] = 0;
-        grid[nextAction.bobailPosition.to.x][nextAction.bobailPosition.to.y] = 3;
-        updateGameGrid(grid);
-
-        const isGameOver = processAiPostMove(false);
-        if(isGameOver) return;
-
         setTimeout(() => {
-            grid[nextAction.piecePosition.from.x][nextAction.piecePosition.from.y] = 0;
-            grid[nextAction.piecePosition.to.x][nextAction.piecePosition.to.y] = bobailGame.getCurrentPlayer();
+            grid[nextAction.bobailPosition.from.x][nextAction.bobailPosition.from.y] = 0;
+            grid[nextAction.bobailPosition.to.x][nextAction.bobailPosition.to.y] = 3;
             updateGameGrid(grid);
-
-            processAiPostMove(true);
-        }, 700);
+    
+            const isGameOver = processAiPostMove(false);
+            if(isGameOver) return;
+    
+            setTimeout(() => {
+                grid[nextAction.piecePosition.from.x][nextAction.piecePosition.from.y] = 0;
+                grid[nextAction.piecePosition.to.x][nextAction.piecePosition.to.y] = bobailGame.getCurrentPlayer();
+                updateGameGrid(grid);
+    
+                processAiPostMove(true);
+            }, 500);
+        }, 200);
     }
 
     const processAiPostMove = (switchPlayer: boolean = false) => {

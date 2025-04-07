@@ -39,7 +39,7 @@ export default class Connect4MonteCarlo {
   applyAction(state: State, action: Action): State {
     const newBoard = state.board.map(col => [...col]);
 
-    if(!action || action.column < 0 || action.column >= 7) return state;
+    if(!action || action.column < 0 || action.column >= 7) return { board: newBoard, player: state.player };
 
     const column = action.column;
     for (let row = 5; row >= 0; row--) {
