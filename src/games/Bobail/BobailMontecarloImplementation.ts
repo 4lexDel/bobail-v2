@@ -69,6 +69,8 @@ export default class BobailMontecarloImplementation {
     applyAction(state: State, action: Action): State {
         const newBoard = state.board.map(row => [...row]);
 
+        if(!action || !action.bobailPosition) return state;
+        
         // Move the Bobail => TO REFACTO!!
         if(action.bobailPosition) {
             newBoard[action.bobailPosition.from.x][action.bobailPosition.from.y] = 0;

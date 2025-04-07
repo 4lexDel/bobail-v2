@@ -11,7 +11,7 @@ const createWorker = () => new Worker(
     { type: 'module' }
 );
 
-const Connect4Canvas = ({ reflexionTime, player }: { reflexionTime: number, player: Player }) => {
+const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { reflexionTime: number, player: Player, onAiProcessStart: () => void, onAiProcessEnd: () => void }) => {
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
@@ -64,6 +64,7 @@ const Connect4Canvas = ({ reflexionTime, player }: { reflexionTime: number, play
                 }               
 
                 isAlgorithmProcessing = true;
+                onAiProcessStart();
                 newWorker.postMessage({ grid: connect4Game.getGrid(), player: connect4Game.getCurrentPlayer(), reflexionTime: reflexionTimeRef.current });
             }
         }
@@ -73,21 +74,20 @@ const Connect4Canvas = ({ reflexionTime, player }: { reflexionTime: number, play
 
     const handleWorkerOnMessage = (event: MessageEvent<any>) => {
         const { nextAction }: { nextAction: Action } = event.data;
+        onAiProcessEnd();
 
-        if (nextAction) {
-            connect4Game.movePiece(nextAction.column);
-            const grid = connect4Game.getGrid();
+        connect4Game.movePiece(nextAction.column);
+        const grid = connect4Game.getGrid();
 
-            updateGameGrid(grid);
+        updateGameGrid(grid);
 
-            processAiPostMove();
-        }
+        processAiPostMove();
     }
 
     const processAiPostMove = () => {
-        refreshBackgroundColor();
         isAlgorithmProcessing = false;
-
+        
+        refreshBackgroundColor();
         connect4Game.checkGameOver();
         return checkWinner();
     }

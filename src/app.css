@@ -8,6 +8,41 @@
     flex-direction: column;
 }
 
+.progressbar-container {
+    position: absolute;
+    top: 150px;
+    left: 50%;
+    width: fit-content;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    background-color: #959595;
+    border-radius: 50px;
+}
+
+.progressbar {
+    height: 20px;
+    z-index: 2;
+    appearance: none;
+    border-radius: 50px;
+
+    /* Chrome and Safari */
+    &::-webkit-progress-bar {
+        background-color: transparent;
+        border-radius: 50px;
+    }
+
+    &::-webkit-progress-value {
+        background-color: #4c4c4c;
+        border-radius: 50px;
+    }
+
+    /* Firefox */
+    &::-moz-progress-bar {
+        background-color: #4c4c4c;
+        border-radius: 50px;
+    }
+}
+
 h1 {
     text-align: center;
     margin: 50px;

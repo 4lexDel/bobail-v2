@@ -11,7 +11,7 @@ const createWorker = () => new Worker(
     { type: 'module' }
 );
 
-const BobailCanvas = ({ reflexionTime, player }: { reflexionTime: number, player: Player }) => {
+const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { reflexionTime: number, player: Player, onAiProcessStart: () => void, onAiProcessEnd: () => void }) => {
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
@@ -78,7 +78,7 @@ const BobailCanvas = ({ reflexionTime, player }: { reflexionTime: number, player
                     }
                     
                     isAlgorithmProcessing = true;
-                    
+                    onAiProcessStart();
                     newWorker.postMessage({ isFirstMove: false, grid: bobailGame.getGrid(), player: bobailGame.getCurrentPlayer(), reflexionTime: reflexionTimeRef.current });
                 }
             }
@@ -91,25 +91,24 @@ const BobailCanvas = ({ reflexionTime, player }: { reflexionTime: number, player
 
     const handleWorkerOnMessage = (event: MessageEvent<any>) => {
         const { nextAction }: { nextAction: Action } = event.data;
+        onAiProcessEnd();
 
-        if (nextAction) {
-            const grid = bobailGame.getGrid();
+        const grid = bobailGame.getGrid();
 
-            grid[nextAction.bobailPosition.from.x][nextAction.bobailPosition.from.y] = 0;
-            grid[nextAction.bobailPosition.to.x][nextAction.bobailPosition.to.y] = 3;
+        grid[nextAction.bobailPosition.from.x][nextAction.bobailPosition.from.y] = 0;
+        grid[nextAction.bobailPosition.to.x][nextAction.bobailPosition.to.y] = 3;
+        updateGameGrid(grid);
+
+        const isGameOver = processAiPostMove(false);
+        if(isGameOver) return;
+
+        setTimeout(() => {
+            grid[nextAction.piecePosition.from.x][nextAction.piecePosition.from.y] = 0;
+            grid[nextAction.piecePosition.to.x][nextAction.piecePosition.to.y] = bobailGame.getCurrentPlayer();
             updateGameGrid(grid);
 
-            const isGameOver = processAiPostMove(false);
-            if(isGameOver) return;
-
-            setTimeout(() => {
-                grid[nextAction.piecePosition.from.x][nextAction.piecePosition.from.y] = 0;
-                grid[nextAction.piecePosition.to.x][nextAction.piecePosition.to.y] = bobailGame.getCurrentPlayer();
-                updateGameGrid(grid);
-
-                processAiPostMove(true);
-            }, 700);
-        }
+            processAiPostMove(true);
+        }, 700);
     }
 
     const processAiPostMove = (switchPlayer: boolean = false) => {
