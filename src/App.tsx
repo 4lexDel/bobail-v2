@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import './app.css'
 import Header, { GameTitle } from './components/Header/Header';
 import BobailCanvas from './components/BobailCanvas/BobailCanvas';
@@ -17,16 +17,7 @@ function App() {
   const [reflexionTime, setReflexionTime] = useState<number>(5000);
   const reflexionTimeRef = useRef(5000);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameParam = urlParams.get('game') as GameTitle;
-    if (gameParam) {
-      setGameSelected(gameParam);
-    }
-  }, []);
-
   const handleOnGameChange = (value: GameTitle) => {
-    console.log(value);
     setGameSelected(value);
     // Game title added as url param to be able to share the game
     const url = new URL(window.location.href);

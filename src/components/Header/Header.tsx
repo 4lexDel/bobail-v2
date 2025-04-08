@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import './header.css'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type GameTitle = "bobail" | "connect-four" | "abalone" | "othello";
 
@@ -8,6 +8,18 @@ function Header({ onGameChange, onSettingsChange }: { onGameChange: (value: Game
   const [selectedRangeValue, setSelectedRangeValue] = useState<number>(5000);
 
   let rangeInput!: HTMLInputElement;
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameParam = urlParams.get('game') as GameTitle;
+    if (gameParam) {
+        const gameSelector = document.getElementById('game-selector') as HTMLSelectElement;
+        if (gameSelector) {
+          gameSelector.value = gameParam;
+          onGameChange(gameParam);
+        }
+    }
+  }, []);
 
   const handleSettingsClick = () => {
     Swal.fire({
