@@ -5,6 +5,7 @@ import BobailCanvas from './components/BobailCanvas/BobailCanvas';
 import Connect4Canvas from './components/Connect4Canvas/Connect4Canvas';
 import GameControl from './components/GameControl/GameControl';
 import { Player } from './utils/models';
+import ReversiCanvas from './components/Reversi/ReversiCanvas';
 
 function App() {
   const [gameSelected, setGameSelected] = useState("bobail");
@@ -37,8 +38,7 @@ function App() {
     setRefresh(false);
     setTimeout(() => {
       setRefresh(true);
-    }
-      , 0);
+    }, 0);
   }
 
   const handleAiProcessChanged = (start: boolean) => {
@@ -76,8 +76,8 @@ function App() {
         }
         {refresh && gameSelected === "bobail" && <BobailCanvas reflexionTime={reflexionTime} player={player} onAiProcessStart={() => handleAiProcessChanged(true)} onAiProcessEnd={() => handleAiProcessChanged(false)} />}
         {refresh && gameSelected === "connect-four" && <Connect4Canvas reflexionTime={reflexionTime} player={player} onAiProcessStart={() => handleAiProcessChanged(true)} onAiProcessEnd={() => handleAiProcessChanged(false)} />}
-        {refresh && gameSelected === "abalone" && <h1>Abalone coming soon...</h1>}
-        {refresh && gameSelected === "othello" && <h1>Othello coming soon...</h1>}
+        {refresh && gameSelected === "abalone" && <h1>Abalone comming soon</h1>}
+        {refresh && gameSelected === "othello" && <ReversiCanvas reflexionTime={reflexionTime} player={player} onAiProcessStart={() => handleAiProcessChanged(true)} onAiProcessEnd={() => handleAiProcessChanged(false)} />}
       </div>
     </>
   )

@@ -31,6 +31,10 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 
 - Rename the whole project (because the scope is bigger)
 
+- Auto mode: AI against AI
+
+
+- REFACTO: REMOVE ALL THE DUPLICATIONS
 
 ## Bugs & clean
 prevent bobailPosition undefined to refacto

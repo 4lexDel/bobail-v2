@@ -7,9 +7,9 @@ import { Player } from "../utils/models";
 onmessage = async(event) => {
   const { grid, player, reflexionTime }: { grid: Cell[][], player: Player, reflexionTime: number } = event.data;
   
-  const Connect4Algorithm = new Connect4MonteCarlo();
+  const connect4Algorithm = new Connect4MonteCarlo();
 
-  const nextAction = await Connect4Algorithm.findBestMove(grid, player, reflexionTime);
+  const nextAction = await connect4Algorithm.findBestMove(grid, player, reflexionTime);
 
   postMessage({ nextAction });
 };
