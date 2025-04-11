@@ -5,7 +5,7 @@ import BobailCanvas from './components/BobailCanvas/BobailCanvas';
 import Connect4Canvas from './components/Connect4Canvas/Connect4Canvas';
 import GameControl from './components/GameControl/GameControl';
 import { Player } from './utils/models';
-import ReversiCanvas from './components/Reversi/ReversiCanvas';
+import ReversiCanvas from './components/ReversiCanvas/ReversiCanvas';
 
 function App() {
   const [gameSelected, setGameSelected] = useState("bobail");

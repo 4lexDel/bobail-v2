@@ -58,6 +58,7 @@ const ReversiCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
             checkWinner();
 
             if (playerBeforeMove !== reversiGame.getCurrentPlayer()) callAi();
+            else highlightAvailableMoves();
         }
     };
 

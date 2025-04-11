@@ -36,6 +36,8 @@ You can find the rules [here](https://www.dragono.fr/jeux-strat%C3%A9gie-anciens
 
 - REFACTO: REMOVE ALL THE DUPLICATIONS
 
+- Implement : heuristic to make the AI stronger
+
 ## Bugs & clean
 prevent bobailPosition undefined to refacto
 
