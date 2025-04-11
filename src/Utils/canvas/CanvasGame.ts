@@ -13,10 +13,12 @@ export class CanvasGame extends CanvasGameBase {
     public static readonly MOVE_AVAILABLE = 1;
     public static readonly PIECE_SELECTED = 2;
     public static readonly HOVER = 3;
+    public static readonly LAST_MOVE = 4;
     private flagHexaColor = [
         { persistent: true, zIndex: 1, hexaColor: "#a8a8a8" }, // Move available
         { persistent: true, zIndex: 2, hexaColor: "#ffcc4f" }, // Piece selected
         { persistent: false, zIndex: -1, hexaColor: "#888888" }, // Hover
+        { persistent: true, zIndex: 0, hexaColor: "#f9d0dc" }, // Last move
     ];
 
     private flagGrid!: number[][];
