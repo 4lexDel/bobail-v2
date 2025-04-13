@@ -16,7 +16,7 @@ const ReversiCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
-    const reversiGame = new ReversiGame();
+    let reversiGame: ReversiGame;
     let game: CanvasGame;
 
     let newWorker: Worker | null = null;
@@ -26,6 +26,8 @@ const ReversiCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
     const reflexionTimeRef = useRef<number>(reflexionTime);
 
     useEffect(() => {
+        reversiGame = new ReversiGame();
+        refreshBackgroundColor();
         if (!canvasRef.current) return;
         game = new CanvasGame(canvasRef.current, reversiGame.getGrid());
         game.onCellClicked = handleCellClick;

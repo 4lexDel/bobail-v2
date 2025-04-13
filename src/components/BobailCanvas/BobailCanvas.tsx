@@ -15,7 +15,7 @@ const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { ref
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
-    const bobailGame = new BobailGame();
+    let bobailGame: BobailGame;
     let game: CanvasGame;
 
     let newWorker: Worker | null = null;
@@ -26,7 +26,9 @@ const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { ref
 
     const reflexionTimeRef = useRef<number>(reflexionTime);
 
-    useEffect(() => {
+    useEffect(() => {       
+        bobailGame = new BobailGame();
+        refreshBackgroundColor();
         if (!canvasRef.current) return;
         game = new CanvasGame(canvasRef.current, bobailGame.getGrid());
         game.onCellClicked = handleCellClick;
@@ -69,6 +71,9 @@ const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { ref
             if (bobailGame.movePiece(firstMove, cellSelected)) {
                 refreshBackgroundColor();
                 updateGameGrid(bobailGame.getGrid());
+
+                bobailGame.checkGameOver();
+                if(checkWinner()) return;
 
                 resetWorker();
                 if (newWorker) {

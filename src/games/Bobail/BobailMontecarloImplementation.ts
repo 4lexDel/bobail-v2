@@ -5,7 +5,7 @@ import { ApplyAction, CalculateReward, GenerateActions, StateIsTerminal } from "
 import BobailService from "./BobailService";
 import { Player, Position } from "../../utils/models";
 
-type State = { board: Cell[][], player: Player };
+export type State = { board: Cell[][], player: Player };
 export type Action = { bobailPosition: { from: Position, to: Position }, piecePosition: { from: Position, to: Position } };
 
 type Func = {
@@ -35,53 +35,11 @@ export default class BobailMontecarloImplementation {
     }
 
     generateActions(state: State): Action[] {
-        const actions: Action[] = [];
-
-        const bobailPosition = BobailService.getBobailPosition(state.board);
-        if (!bobailPosition) throw new Error("Bobail is missing from the grid");
-
-        // Generate all possible Bobail moves
-        const bobailMoves = BobailService.getAdjacentPositions(bobailPosition)
-            .filter(pos => state.board[pos.x][pos.y] === 0);
-
-        for (const bobailMove of bobailMoves) {
-            const newGridBobail = state.board.map(row => [...row]);
-
-            newGridBobail[bobailPosition.x][bobailPosition.y] = 0;
-            newGridBobail[bobailMove.x][bobailMove.y] = 3;
-
-            // Generate all possible piece moves for current player
-            const playerPositions = BobailService.getPlayerPositions(newGridBobail, state.player);
-            for (const piece of playerPositions) {
-                const pieceMoves = BobailService.getLinearMoves(newGridBobail, piece);
-                for (const move of pieceMoves) {
-                    actions.push({
-                        bobailPosition: { from: { x: bobailPosition.x, y: bobailPosition.y }, to: { x: bobailMove.x, y: bobailMove.y } },
-                        piecePosition: { from: { x: piece.x, y: piece.y }, to: { x: move.x, y: move.y } }
-                    });
-                }
-            }
-        }
-
-        return actions;
+        return BobailService.generateActions(state);
     }
 
     applyAction(state: State, action: Action): State {
-        const newBoard = state.board.map(row => [...row]);
-
-        if(!action || !action.bobailPosition) return { board: newBoard, player: state.player };
-        
-        // Move the Bobail => TO REFACTO!!
-        if(action.bobailPosition) {
-            newBoard[action.bobailPosition.from.x][action.bobailPosition.from.y] = 0;
-            newBoard[action.bobailPosition.to.x][action.bobailPosition.to.y] = 3;
-        }        
-
-        // Move the player's piece
-        newBoard[action.piecePosition.from.x][action.piecePosition.from.y] = 0;
-        newBoard[action.piecePosition.to.x][action.piecePosition.to.y] = state.player;
-
-        return { board: newBoard, player: state.player === 1 ? 2 : 1 };
+        return BobailService.applyAction(state, action);
     }
 
     stateIsTerminal(state: State): boolean {
@@ -89,7 +47,17 @@ export default class BobailMontecarloImplementation {
     }
 
     calculateReward(state: State, player: number): number {
-        const bobailPosition = BobailService.getBobailPosition(state.board);
+        let currentState = state;
+    
+        while (!BobailService.isGameOver(state.board)) {
+            const availableActions = BobailService.generateActions(currentState);
+       
+            const selectedAction = availableActions[Math.random()*(availableActions.length-1)]; // Without heuristic
+    
+            currentState = BobailService.applyAction(currentState, selectedAction);
+        }
+
+        const bobailPosition = BobailService.getBobailPosition(currentState.board);
 
         if(!bobailPosition) return 0;
 
@@ -97,7 +65,7 @@ export default class BobailMontecarloImplementation {
         else if(bobailPosition.y === 0) return (player === 1 ? 1 : -1);
 
         const adjacentPositions = BobailService.getAdjacentPositions(bobailPosition)
-            .filter((pos) => state.board[pos.x][pos.y] === 0)
+            .filter((pos) => currentState.board[pos.x][pos.y] === 0)
         
         if(!adjacentPositions.length) return 1;
 

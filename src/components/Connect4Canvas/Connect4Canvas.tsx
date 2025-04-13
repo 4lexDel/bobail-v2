@@ -15,7 +15,7 @@ const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { r
     const canvasRef = useRef(null);
     const [backgroundColor, setBackgroundColor] = useState("tomato");
 
-    const connect4Game = new Connect4Game();
+    let connect4Game: Connect4Game;
     let game: CanvasGame;
 
     let newWorker: Worker | null = null;
@@ -25,6 +25,8 @@ const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { r
     const reflexionTimeRef = useRef<number>(reflexionTime);
 
     useEffect(() => {
+        connect4Game = new Connect4Game();
+        refreshBackgroundColor();
         if (!canvasRef.current) return;
         game = new CanvasGame(canvasRef.current, connect4Game.getGrid());
         game.onCellClicked = handleCellClick;
