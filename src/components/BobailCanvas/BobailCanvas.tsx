@@ -90,6 +90,7 @@ const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { ref
         } else {
             bobailGame.moveBobail(cellSelected);
         }
+        game.editFlagGrid([{ x: cellSelected.x, y: cellSelected.y }], CanvasGame.LAST_MOVE);
         firstMove = null;
         checkWinner();
     };
@@ -104,6 +105,7 @@ const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { ref
             grid[nextAction.bobailPosition.from.x][nextAction.bobailPosition.from.y] = 0;
             grid[nextAction.bobailPosition.to.x][nextAction.bobailPosition.to.y] = 3;
             updateGameGrid(grid);
+            game.editFlagGrid([{ x: nextAction.bobailPosition.to.x, y: nextAction.bobailPosition.to.y }], CanvasGame.LAST_MOVE);
     
             const isGameOver = processAiPostMove(false);
             if(isGameOver) return;
@@ -112,6 +114,7 @@ const BobailCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { ref
                 grid[nextAction.piecePosition.from.x][nextAction.piecePosition.from.y] = 0;
                 grid[nextAction.piecePosition.to.x][nextAction.piecePosition.to.y] = bobailGame.getCurrentPlayer();
                 updateGameGrid(grid);
+                game.editFlagGrid([{ x: nextAction.piecePosition.to.x, y: nextAction.piecePosition.to.y }], CanvasGame.LAST_MOVE);
     
                 processAiPostMove(true);
             }, 500);

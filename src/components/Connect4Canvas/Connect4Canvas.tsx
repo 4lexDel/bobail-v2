@@ -34,9 +34,7 @@ const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { r
     }, []);
 
     const handleCellHover = (x: number, _: number) => {
-        const column = Array.from({ length: 6 }, (_, i) => ({ x, y: i }));
-        game.resetFlagGrid();
-        game.editFlagGrid(column, CanvasGame.HOVER);
+        game.editFlagGrid(Array.from({ length: 6 }, (_, i) => ({ x, y: i })), CanvasGame.HOVER);
     }
 
     const handleCellClick = (x: number, _: number) => {
@@ -57,6 +55,8 @@ const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { r
         if (connect4Game.movePiece(column)) {
             refreshBackgroundColor();
             updateGameGrid(connect4Game.getGrid());
+
+            game.editFlagGrid(Array.from({length: 6}, (_, i) => ({x: column, y: i})), CanvasGame.LAST_MOVE);
 
             resetWorker();
             if (newWorker) {
@@ -83,6 +83,7 @@ const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { r
             const grid = connect4Game.getGrid();
 
             updateGameGrid(grid);
+            game.editFlagGrid(Array.from({length: 6}, (_, i) => ({x: nextAction.column, y: i})), CanvasGame.LAST_MOVE);
 
             processAiPostMove();
         }, 200);

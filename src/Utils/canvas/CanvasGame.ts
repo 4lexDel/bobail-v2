@@ -18,7 +18,7 @@ export class CanvasGame extends CanvasGameBase {
         { persistent: true, zIndex: 1, hexaColor: "#a8a8a8" }, // Move available
         { persistent: true, zIndex: 2, hexaColor: "#ffcc4f" }, // Piece selected
         { persistent: false, zIndex: -1, hexaColor: "#888888" }, // Hover
-        { persistent: true, zIndex: 0, hexaColor: "#f9d0dc" }, // Last move
+        { persistent: true, zIndex: 0, hexaColor: "#585858" }, // Last move
     ];
 
     private flagGrid!: number[][];
