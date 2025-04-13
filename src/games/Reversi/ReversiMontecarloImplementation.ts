@@ -41,17 +41,7 @@ export default class ReversiMonteCarlo {
   }
 
   applyAction(state: State, action: Action): State {
-    if (!action) return { board: state.board.map(col => [...col]), player: state.player };
-
-    const newBoard = ReversiService.applyMove(state.board, state.player, action) as Cell[][];
-
-    const opponent = state.player === 1 ? 2 : 1;
-    let newPlayer = opponent;
-
-    // If the opponent can't play
-    if (!ReversiService.getAvailableMoves(newBoard, opponent).length) newPlayer = state.player;
-
-    return { board: newBoard, player: newPlayer as Player };
+    return ReversiService.applyAction(state, action);
   }
 
   stateIsTerminal(state: State): boolean {
@@ -59,15 +49,26 @@ export default class ReversiMonteCarlo {
   }
 
   calculateReward(state: State, player: number): number {
-    const winner = ReversiService.getCurrentWinner(state.board);
+    let currentState = state;
+
+    while (!ReversiService.isGameOver(state.board)) {
+      const availableMoves = ReversiService.getAvailableMoves(currentState.board, currentState.player);
+
+      availableMoves.map(action => {
+        const nextBoard = ReversiService.applyMove(state.board, state.player, action);
+        const score = ReversiService.evaluatePosition(nextBoard, state.player); // Use the heuristic we wrote
+        return { action, score };
+      })
+      .sort((a, b) => b.score - a.score) // Descending order: best score first
+      .map(entry => entry.action);       // Extract actions only
+      const selectedAction = availableMoves[0];
+
+      currentState = ReversiService.applyAction(currentState, selectedAction);
+    }
+
+    const winner = ReversiService.getCurrentWinner(currentState.board);
     if (winner === player) return -1;
     if (winner !== player) return 1;
     return 0;
-    if (winner === 0) return 0;
-
-    // // Heuristic to evaluate the intermediaire position
-    // const score = ReversiService.evaluatePosition(state.board, player);
-
-    // return score/200;
   }
 }

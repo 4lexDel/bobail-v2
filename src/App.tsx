@@ -56,8 +56,6 @@ function App() {
         step++;
         setAiProgress(step);
       }, reflexionTimeRef.current / loaderNbStep);
-
-      console.log("start");
     }
     else {
       setAiProgress(0);

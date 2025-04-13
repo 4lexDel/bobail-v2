@@ -42,8 +42,8 @@ const Connect4Canvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { r
         game.resetFlagGrid();
 
         if(!connect4Game.isColumnFull(x)) {
-            if(checkWinner()) return;
             processMove(x);
+            if(checkWinner()) return;
         }
     };
 

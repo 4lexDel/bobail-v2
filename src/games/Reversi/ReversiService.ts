@@ -1,5 +1,6 @@
 import { Player, Position } from "../../utils/models";
 import { Cell } from "./ReversiGame";
+import { Action, State } from "./ReversiMontecarloImplementation";
 
 export default class ReversiService {
   public static directions = [
@@ -124,4 +125,18 @@ export default class ReversiService {
 
     return score;
   }
+
+  public static applyAction(state: State, action: Action): State {
+      if (!action) return { board: state.board.map(col => [...col]), player: state.player };
+  
+      const newBoard = ReversiService.applyMove(state.board, state.player, action) as Cell[][];
+  
+      const opponent = state.player === 1 ? 2 : 1;
+      let newPlayer = opponent;
+  
+      // If the opponent can't play
+      if (!ReversiService.getAvailableMoves(newBoard, opponent).length) newPlayer = state.player;
+  
+      return { board: newBoard, player: newPlayer as Player };
+    }
 }

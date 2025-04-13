@@ -57,7 +57,7 @@ const ReversiCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
 
             game.editFlagGrid([{ x, y }], CanvasGame.LAST_MOVE);
 
-            checkWinner();
+            if(checkWinner()) return;
 
             if (playerBeforeMove !== reversiGame.getCurrentPlayer()) callAi();
             else highlightAvailableMoves();
@@ -94,6 +94,8 @@ const ReversiCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
             processAiPostMove();
 
             game.editFlagGrid([{ x: nextAction.x, y: nextAction.y }], CanvasGame.LAST_MOVE);
+
+            if(checkWinner()) return;
 
             // Keep playing if the player can't play
             if (playerBeforeMove === reversiGame.getCurrentPlayer()) {
