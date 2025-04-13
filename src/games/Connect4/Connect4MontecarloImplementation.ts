@@ -11,9 +11,9 @@ export type State = {
 export type Action = { column: number };
 
 export default class Connect4MonteCarlo {
-  constructor() {}
+  constructor() { }
 
-  findBestMove(gamePosition: Cell[][], player: Player, reflexionTime: number): Promise<Action> {   
+  findBestMove(gamePosition: Cell[][], player: Player, reflexionTime: number): Promise<Action> {
     const funcs = {
       generateActions: this.generateActions,
       applyAction: this.applyAction,
@@ -27,39 +27,32 @@ export default class Connect4MonteCarlo {
   }
 
   generateActions(state: State): Action[] {
-    const actions: Action[] = [];
-    for (let col = 0; col < 7; col++) {
-      if (state.board[col][0] === 0) {
-        actions.push({ column: col });
-      }
-    }
-    return actions;
+    return Connect4Service.generateActions(state);
   }
 
   applyAction(state: State, action: Action): State {
-    const newBoard = state.board.map(col => [...col]);
-
-    if(!action || action.column < 0 || action.column >= 7) return { board: newBoard, player: state.player };
-
-    const column = action.column;
-    for (let row = 5; row >= 0; row--) {
-      if (newBoard[column][row] === 0) {
-        newBoard[column][row] = state.player;
-        break;
-      }
-    }
-    return { board: newBoard, player: state.player === 1 ? 2 : 1 };
+    return Connect4Service.applyAction(state, action);
   }
 
   stateIsTerminal(state: State): boolean {
-    return (Connect4Service.isGridFull(state.board) || Connect4Service.checkWin(state.board, 1) || Connect4Service.checkWin(state.board, 2));
+    return Connect4Service.isGameOver(state.board);
   }
 
-  calculateReward(state: State, player: number): number {    
+  calculateReward(state: State, player: number): number {
+    let currentState = state;
+
+    while (!Connect4Service.isGameOver(state.board)) {
+      const availableActions = Connect4Service.generateActions(currentState);
+
+      const selectedAction = availableActions[Math.random() * (availableActions.length - 1)]; // Without heuristic
+
+      currentState = Connect4Service.applyAction(currentState, selectedAction);
+    }
+
     if (Connect4Service.checkWin(state.board, player)) return -1; // Win
     if (Connect4Service.checkWin(state.board, player === 1 ? 2 : 1)) return 1; // Loss
     if (Connect4Service.isGridFull(state.board)) return 0; // Draw
-    
+
     return 0; // Not terminal state
   }
 }

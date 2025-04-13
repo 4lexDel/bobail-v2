@@ -1,3 +1,6 @@
+import { Cell } from "./Connect4Game";
+import { Action, State } from "./Connect4MontecarloImplementation";
+
 export default class Connect4Service {
   public static checkGameOver(grid: number[][], currentPlayer: number): number | null {
     // Check for horizontal, vertical, and diagonal wins
@@ -81,5 +84,34 @@ export default class Connect4Service {
 
   public static isGridFull(grid: number[][]): boolean {
     return grid.every(column => column.every(cell => cell !== 0));
+  }
+
+  public static isGameOver(board: number[][] | Cell[][]) {
+    return (Connect4Service.isGridFull(board) || Connect4Service.checkWin(board, 1) || Connect4Service.checkWin(board, 2));
+  }
+
+  public static generateActions(state: State): Action[] {
+    const actions: Action[] = [];
+    for (let col = 0; col < 7; col++) {
+      if (state.board[col][0] === 0) {
+        actions.push({ column: col });
+      }
+    }
+    return actions;
+  }
+
+  public static applyAction(state: State, action: Action): State {
+    const newBoard = state.board.map(col => [...col]);
+
+    if (!action || action.column < 0 || action.column >= 7) return { board: newBoard, player: state.player };
+
+    const column = action.column;
+    for (let row = 5; row >= 0; row--) {
+      if (newBoard[column][row] === 0) {
+        newBoard[column][row] = state.player;
+        break;
+      }
+    }
+    return { board: newBoard, player: state.player === 1 ? 2 : 1 };
   }
 }
