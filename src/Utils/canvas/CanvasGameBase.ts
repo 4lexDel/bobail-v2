@@ -81,11 +81,18 @@ export class CanvasGameBase {
         this.canvas.width = width;// - this.canvas.offsetLeft;
         this.canvas.height = height;// - this.canvas.offsetTop;
 
-        this.d = Math.min(this.canvas.width / (this.grid.length + 1), (this.canvas.height) / (this.grid[0].length + 3));
+        if (this.displayMode === "GRID") {
+            this.d = Math.min(this.canvas.width / (this.grid.length + 1), (this.canvas.height) / (this.grid[0].length + 3));
+            // Use to center the screen
+            this.mx = (this.canvas.width - (this.d * this.grid.length)) / 2;
+            this.my = 2*(this.canvas.height - (this.d * this.grid[0].length)) / 5;
+        }
+        else {
+            this.d = Math.min(this.canvas.width, this.canvas.height)/((this.grid.length + 2) * Math.sqrt(3));
 
-        // Use to center the screen
-        this.mx = (this.canvas.width - (this.d * this.grid.length)) / 2;
-        this.my = 2*(this.canvas.height - (this.d * this.grid[0].length)) / 5;
+            this.mx = -this.d + (this.canvas.width - (this.d * (this.grid.length+2) * Math.sqrt(3))) / 2;
+            this.my = (this.canvas.height - (this.grid[0].length * 1.5 * this.d)) / 2;
+        }
 
         this.isRenderNeed = true;
     }
