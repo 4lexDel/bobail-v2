@@ -1,24 +1,46 @@
 import { Position } from "../models";
+import DisplayTool from "./DisplayTool";
 
 export class CanvasGameBase {
-    canvas: HTMLCanvasElement;
-    grid: number[][];
-    ctx!: CanvasRenderingContext2D;
-    FPS: number = 20;
-    prevTick: number = 0;
-    mouseX: number;
-    mouseY: number;
-    mx: number = 0;
-    my: number = 0;
-    d: number = 0;
-    isRenderNeed: boolean = false;
+    public canvas: HTMLCanvasElement;
+    protected displayMode: "GRID" | "HEXAGON";
+    protected displayTool!: DisplayTool;
+    public grid: number[][];
+    public ctx!: CanvasRenderingContext2D;
+    protected FPS: number = 20;
+    protected prevTick: number = 0;
+    protected mouseX: number;
+    protected mouseY: number;
+    public mx: number = 0;
+    public my: number = 0;
+    public d: number = 0;
+    protected isRenderNeed: boolean = false;
 
-    onCellClicked: ((x: number, y: number) => void) | null = null;
-    onCellHover: ((x: number, y: number) => void) | null = null;
+    public onCellClicked: ((x: number, y: number) => void) | null = null;
+    public onCellHover: ((x: number, y: number) => void) | null = null;
 
-    constructor(canvas: HTMLCanvasElement, grid: number[][]) {
+    public colorBackground: string = "rgb(120, 120, 120)";
+    public pieceHexaColor = [
+        "#fd0d34", // red
+        "#3c8bda", // neutral blue
+        "#ffbe33", // golden
+        "#179374", // neutral green
+        "#99abc2", // grey
+    ];
+
+    public flagHexaColor = [
+        { persistent: true, zIndex: 1, hexaColor: "#a8a8a8" }, // Move available
+        { persistent: true, zIndex: 2, hexaColor: "#ffcc4f" }, // Piece selected
+        { persistent: false, zIndex: -1, hexaColor: "#888888" }, // Hover
+        { persistent: true, zIndex: 0, hexaColor: "#585858" }, // Last move
+    ];
+
+    public flagGrid!: number[][];
+
+    constructor(canvas: HTMLCanvasElement, grid: number[][], displayMode: "GRID" | "HEXAGON") {
         this.canvas = canvas;
         this.grid = grid;
+        this.displayMode = displayMode;
 
         const context = this.canvas.getContext("2d");
         if (!context) {

@@ -1,0 +1,50 @@
+import { CanvasGameBase } from "./CanvasGameBase";
+import DisplayTool from "./DisplayTool";
+
+export default class HexagonDisplayTool implements DisplayTool {
+    constructor(private instance: CanvasGameBase) {}
+
+    public displayGrid(): void {
+        for (let x = 0; x < this.instance.grid.length; x++) {
+            for (let y = 0; y < this.instance.grid[0].length; y++) {
+                const value = this.instance.grid[x][y];
+
+                const padding = 0;///////////////////
+    
+                if (value === -1) continue;
+
+                if (this.instance.flagGrid[x][y] !== 0) this.instance.ctx.fillStyle = this.instance.flagHexaColor[this.instance.flagGrid[x][y] - 1].hexaColor;
+                else this.instance.ctx.fillStyle = this.instance.colorBackground;   
+        
+                const centerX = this.instance.mx + x * (this.instance.d * Math.sqrt(3) + padding) + (y * 0.5 * (this.instance.d * Math.sqrt(3) + padding));
+                const centerY = this.instance.my + y * (1.5 * this.instance.d + padding);
+                this.displayHexagon(centerX, centerY);
+            }
+        }
+    }
+
+    private displayHexagon(a: number, b: number, showCenter = false) {
+        this.instance.ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            this.instance.ctx.lineTo(
+                a + this.instance.d * Math.cos((i * Math.PI) / 3 + (Math.PI / 2)),
+                b + this.instance.d * Math.sin((i * Math.PI) / 3 + (Math.PI / 2))
+            );
+        }
+        this.instance.ctx.closePath();
+        this.instance.ctx.strokeStyle = "rgb(100, 100, 100)";
+        this.instance.ctx.lineWidth = this.instance.canvas.width <= 650 ? 2 : 4;
+        this.instance.ctx.stroke();
+        this.instance.ctx.fill();
+    
+        if (showCenter) {
+            this.instance.ctx.fillStyle = "black";
+            this.instance.ctx.beginPath();
+            this.instance.ctx.arc(a, b, this.instance.d * 0.1, 0, 2 * Math.PI);
+            this.instance.ctx.fill();
+        }
+    }
+
+    private displayPiece(x: number, y: number): void {
+    }
+}

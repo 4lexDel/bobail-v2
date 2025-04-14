@@ -6,6 +6,7 @@ import Connect4Canvas from './components/Connect4Canvas/Connect4Canvas';
 import GameControl from './components/GameControl/GameControl';
 import { Player } from './utils/models';
 import ReversiCanvas from './components/ReversiCanvas/ReversiCanvas';
+import AbaloneCanvas from './components/AbaloneCanvas/AbaloneCanvas';
 
 function App() {
   const [gameSelected, setGameSelected] = useState("bobail");
@@ -74,7 +75,7 @@ function App() {
         }
         {refresh && gameSelected === "bobail" && <BobailCanvas reflexionTime={reflexionTime} player={player} onAiProcessStart={() => handleAiProcessChanged(true)} onAiProcessEnd={() => handleAiProcessChanged(false)} />}
         {refresh && gameSelected === "connect-four" && <Connect4Canvas reflexionTime={reflexionTime} player={player} onAiProcessStart={() => handleAiProcessChanged(true)} onAiProcessEnd={() => handleAiProcessChanged(false)} />}
-        {refresh && gameSelected === "abalone" && <h1>Abalone comming soon</h1>}
+        {refresh && gameSelected === "abalone" && <AbaloneCanvas reflexionTime={reflexionTime} player={player} onAiProcessStart={() => handleAiProcessChanged(true)} onAiProcessEnd={() => handleAiProcessChanged(false)} />}
         {refresh && gameSelected === "othello" && <ReversiCanvas reflexionTime={reflexionTime} player={player} onAiProcessStart={() => handleAiProcessChanged(true)} onAiProcessEnd={() => handleAiProcessChanged(false)} />}
       </div>
     </>
