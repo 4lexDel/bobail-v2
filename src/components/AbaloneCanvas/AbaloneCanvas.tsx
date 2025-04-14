@@ -38,11 +38,11 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
     }
 
     const handleCellClick = (x: number, _: number) => {
-        if (isAlgorithmProcessing || abaloneGame.isGameOver()) return;
-        game.resetFlagGrid();
+        // if (isAlgorithmProcessing || abaloneGame.isGameOver()) return;
+        // game.resetFlagGrid();
 
-        processMove(x);
-        if(checkWinner()) return;
+        // processMove(x);
+        // if(checkWinner()) return;
     };
 
     useEffect(() => {
