@@ -41,7 +41,7 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
         game.editFlagGrid([{ x, y }], CanvasGame.HOVER);
     }
 
-    const handleCellClick = (x: number, y: number) => {
+    const handleCellClick = (x: number, y: number) => {       
         if (isAlgorithmProcessing || abaloneGame.isGameOver()) return;
         game.resetFlagGrid();
 
@@ -72,6 +72,9 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
                 updateGameGrid(abaloneGame.getGrid());
     
                 game.editFlagGrid([firstMove, { x, y }], CanvasGame.LAST_MOVE);
+
+                checkWinner();
+                if(abaloneGame.isGameOver()) return;
     
                 resetWorker();
                 if (newWorker) {
@@ -92,8 +95,6 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
                 highlightAvailableMoves({ x, y });
             }
         }
-
-        checkWinner();
     };
 
     const handleWorkerOnMessage = (event: MessageEvent<any>) => {

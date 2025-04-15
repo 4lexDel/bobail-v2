@@ -47,15 +47,23 @@ export default class AbaloneMonteCarlo {
     while (!AbaloneService.isGameOver(state.board)) {
       const availableActions = AbaloneService.generateActions(currentState);
 
-      const selectedAction = availableActions[Math.random() * (availableActions.length - 1)]; // Without heuristic
+      availableActions.map(action => {
+        const nextState = AbaloneService.applyAction(state, action);
+        return { action, score: AbaloneService.evaluateBoard(nextState.board, nextState.player) };
+      })
+      .sort((a, b) => b.score - a.score)
+      .map(entry => entry.action);       // Extract actions only
+      const selectedAction = availableActions[0];
+
+      // const selectedAction = availableActions[Math.random() * (availableActions.length - 1)]; // Without heuristic
 
       currentState = AbaloneService.applyAction(currentState, selectedAction);
     }
 
     const piecesLost = AbaloneService.countPlayerPiecesLost(state.board);
 
-    if (piecesLost.player1 <= 6) return player === 1 ? 1 : -1;
-    if (piecesLost.player2 <= 6 && player === 1) return player === 1 ? -1 : 1;
+    if (piecesLost.player1 >= 6) return player === 1 ? 1 : -1;
+    if (piecesLost.player2 >= 6) return player === 1 ? -1 : 1;
 
     return 0; // Not terminal state
   }
