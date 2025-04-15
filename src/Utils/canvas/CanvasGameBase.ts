@@ -82,7 +82,8 @@ export class CanvasGameBase {
         this.canvas.height = height;// - this.canvas.offsetTop;
 
         if (this.displayMode === "GRID") {
-            this.d = Math.min(this.canvas.width / (this.grid.length + 1), (this.canvas.height) / (this.grid[0].length + 3));
+            const paddingBlock = 2;
+            this.d = Math.min(this.canvas.width / (this.grid.length+paddingBlock), (this.canvas.height) / (this.grid[0].length+paddingBlock));
             // Use to center the screen
             this.mx = (this.canvas.width - (this.d * this.grid.length)) / 2;
             this.my = 2*(this.canvas.height - (this.d * this.grid[0].length)) / 5;
