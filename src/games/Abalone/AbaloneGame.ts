@@ -1,4 +1,5 @@
-import { Player } from "../../utils/models";
+import { Player, Position } from "../../utils/models";
+import AbaloneService from "./AbaloneService";
 
 export type Cell = -1 | 0 | Player;
 
@@ -21,7 +22,7 @@ export default class AbaloneGame {
 
     private initializeGrid(): void {
         this.grid = [
-            [-1, -1, -1, -1, 0, 0, 0, 1, 1], //-1  => Not a cell (void)
+            [-1, -1, -1, -1, 0, 0, 2, 1, 1], //-1  => Not a cell (void)
             [-1, -1, -1, 0, 0, 0, 0, 1, 1], // 1  => Player 1
             [-1, -1, 0, 0, 0, 0, 1, 1, 1], // 2  => Player 2
             [-1, 2, 0, 0, 0, 0, 1, 1, 1], // 0  => Empty
@@ -53,13 +54,19 @@ export default class AbaloneGame {
         return this.winner !== null;
     }
 
-    public movePiece(x: number, y: number): boolean {
+    public movePiece(from: Position, to: Position): boolean {       
         if (this.isGameOver()) return false;
 
-        // Logic
+        if (this.grid[from.x][from.y] !== this.currentPlayer) return false;
+
+        const validMoves = AbaloneService.getAvailableMoves(this.grid, { x: from.x, y: from.y });
+
+        if (!validMoves.some(pos => pos.x === to.x && pos.y === to.y)) return false;
+
+        this.grid = AbaloneService.applyMove2(this.grid, { x: from.x, y: from.y }, { x: to.x, y: to.y }) as Cell[][];
 
         this.checkGameOver();
-        this.switchPlayer();
+        this.switchPlayer();        
 
         return true;
     }

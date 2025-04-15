@@ -21,11 +21,14 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
 
     let newWorker: Worker | null = null;
 
+    let firstMove: Position | null = null;
+
     let isAlgorithmProcessing = false;
 
     const reflexionTimeRef = useRef<number>(reflexionTime);
 
     useEffect(() => {
+        firstMove = null;
         abaloneGame = new AbaloneGame();
         refreshBackgroundColor();
         if (!canvasRef.current) return;
@@ -34,22 +37,20 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
         game.onCellHover = handleCellHover;
     }, []);
 
-    const handleCellHover = (x: number, y: number) => {       
+    const handleCellHover = (x: number, y: number) => {
         game.editFlagGrid([{ x, y }], CanvasGame.HOVER);
     }
 
-    const handleCellClick = (x: number, y: number) => { 
+    const handleCellClick = (x: number, y: number) => {
         if (isAlgorithmProcessing || abaloneGame.isGameOver()) return;
         game.resetFlagGrid();
 
-        highlightAvailableMoves({ x, y });
-
-        // if(checkWinner()) return;
-        // processMove(x, y);
+        if (checkWinner()) return;
+        processMove(x, y);
     };
 
-    const highlightAvailableMoves = (cellSelected: Position) => {      
-        const availablePositions = AbaloneService.getAvailableMoves(abaloneGame.getGrid(), cellSelected);        
+    const highlightAvailableMoves = (cellSelected: Position) => {
+        const availablePositions = AbaloneService.getAvailableMoves(abaloneGame.getGrid(), cellSelected);
         if (availablePositions?.length) {
             game.editFlagGrid(availablePositions, CanvasGame.MOVE_AVAILABLE);
             game.editFlagGrid([cellSelected], CanvasGame.PIECE_SELECTED);
@@ -60,26 +61,38 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
         reflexionTimeRef.current = reflexionTime;
     }, [reflexionTime]);
 
-    const processMove = (x: number, y: number) => {
-        if (abaloneGame.movePiece(x, y)) {
-            refreshBackgroundColor();
-            updateGameGrid(abaloneGame.getGrid());
-
-            // game.editFlagGrid(Array.from({length: 6}, (_, i) => ({x: column, y: i})), CanvasGame.LAST_MOVE);
-
-            // resetWorker();
-            if (newWorker) {
-                newWorker.onmessage = (event) => {
-                    // AI answer
-                    handleWorkerOnMessage(event);
-                }               
-
-                isAlgorithmProcessing = true;
-                onAiProcessStart();
-                newWorker.postMessage({ grid: abaloneGame.getGrid(), player: abaloneGame.getCurrentPlayer(), reflexionTime: reflexionTimeRef.current });
+    const processMove = (x: number, y: number) => {         
+        if (!firstMove) {           
+            firstMove = { x, y };
+            highlightAvailableMoves({ x, y });
+        }
+        else {
+            if (abaloneGame.movePiece(firstMove, { x, y })) {            
+                refreshBackgroundColor();
+                updateGameGrid(abaloneGame.getGrid());
+    
+                game.editFlagGrid([firstMove, { x, y }], CanvasGame.LAST_MOVE);
+    
+                //resetWorker();
+                if (newWorker) {
+                    newWorker.onmessage = (event) => {
+                        // AI answer
+                        handleWorkerOnMessage(event);
+                    }
+    
+                    isAlgorithmProcessing = true;
+                    onAiProcessStart();
+                    newWorker.postMessage({ grid: abaloneGame.getGrid(), player: abaloneGame.getCurrentPlayer(), reflexionTime: reflexionTimeRef.current });
+                }
+                firstMove = null;
+            }
+            else {
+                // invalid move
+                firstMove = { x, y };
+                highlightAvailableMoves({ x, y });
             }
         }
-        
+
         checkWinner();
     };
 
@@ -88,19 +101,19 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
         onAiProcessEnd();
 
         setTimeout(() => {
-            abaloneGame.movePiece(nextAction.x, nextAction.y);
-            const grid = abaloneGame.getGrid();
+            // abaloneGame.movePiece(nextAction.x, nextAction.y);
+            // const grid = abaloneGame.getGrid();
 
-            updateGameGrid(grid);
-            // game.editFlagGrid(Array.from({length: 6}, (_, i) => ({x: nextAction.column, y: i})), CanvasGame.LAST_MOVE);
+            // updateGameGrid(grid);
+            // // game.editFlagGrid(Array.from({length: 6}, (_, i) => ({x: nextAction.column, y: i})), CanvasGame.LAST_MOVE);
 
-            processAiPostMove();
+            // processAiPostMove();
         }, 200);
     }
 
     const processAiPostMove = () => {
         isAlgorithmProcessing = false;
-        
+
         refreshBackgroundColor();
         abaloneGame.checkGameOver();
         return checkWinner();
@@ -121,11 +134,11 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
     }
 
     const checkWinner = () => {
-        if (!abaloneGame.isGameOver()) return false; 
+        if (!abaloneGame.isGameOver()) return false;
 
         const message = abaloneGame.getWinner() === 0 ? "This game is a draw!" : `Player ${abaloneGame.getWinner()} has won!`;
         let color = abaloneGame.getWinner() === 1 ? "red" : "blue";
-        if(abaloneGame.getWinner() === 0) color = "black";
+        if (abaloneGame.getWinner() === 0) color = "black";
 
         setTimeout(() => {
             Swal.fire({
