@@ -21,10 +21,10 @@ export default class AbaloneGame {
 
     private initializeGrid(): void {
         this.grid = [
-            [-1, -1, -1, -1, 0, 0, 0, 1, 1], //-1  => vide
+            [-1, -1, -1, -1, 0, 0, 0, 1, 1], //-1  => Not a cell (void)
             [-1, -1, -1, 0, 0, 0, 0, 1, 1], // 1  => Player 1
             [-1, -1, 0, 0, 0, 0, 1, 1, 1], // 2  => Player 2
-            [-1, 2, 0, 0, 0, 0, 1, 1, 1], // 0  => Neutre
+            [-1, 2, 0, 0, 0, 0, 1, 1, 1], // 0  => Empty
             [2, 2, 2, 0, 0, 0, 1, 1, 1],
             [2, 2, 2, 0, 0, 0, 0, 1, -1],
             [2, 2, 2, 0, 0, 0, 0, -1, -1],
@@ -53,7 +53,7 @@ export default class AbaloneGame {
         return this.winner !== null;
     }
 
-    public movePiece(col: number): boolean {
+    public movePiece(x: number, y: number): boolean {
         if (this.isGameOver()) return false;
 
         // Logic
