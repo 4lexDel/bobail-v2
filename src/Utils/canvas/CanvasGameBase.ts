@@ -86,12 +86,12 @@ export class CanvasGameBase {
             this.d = Math.min(this.canvas.width / (this.grid.length+paddingBlock), (this.canvas.height) / (this.grid[0].length+paddingBlock));
             // Use to center the screen
             this.mx = (this.canvas.width - (this.d * this.grid.length)) / 2;
-            this.my = 2*(this.canvas.height - (this.d * this.grid[0].length)) / 5;
+            this.my = (this.canvas.height - (this.d * this.grid[0].length)) / 2;
         }
         else {
             this.d = Math.min(this.canvas.width, this.canvas.height)/((this.grid.length + 2) * Math.sqrt(3));
 
-            this.mx = -this.d + (this.canvas.width - (this.d * (this.grid.length+2) * Math.sqrt(3))) / 2;
+            this.mx = -this.d + (this.canvas.width - (this.d * (this.grid.length + 2) * Math.sqrt(3))) / 2;
             this.my = (this.canvas.height - (this.grid[0].length * 1.5 * this.d)) / 2;
         }
 
@@ -132,6 +132,13 @@ export class CanvasGameBase {
     }
 
     private getGridCoordsFromMouseCoords(mouseX: number, mouseY: number): Position | null {
+        return this.displayMode === "GRID" ? 
+            this.getRegularGridCoordsFromMouseCoords(mouseX, mouseY)
+                : 
+            this.getHexagonGridCoordsFromMouseCoords(mouseX, mouseY);
+    }
+
+    private getRegularGridCoordsFromMouseCoords(mouseX: number, mouseY: number): Position | null {
         const x = Math.floor((mouseX - this.mx) / this.d);
         const y = Math.floor((mouseY - this.my) / this.d);
 
@@ -140,6 +147,27 @@ export class CanvasGameBase {
         }
 
         return { x, y };
+    }
+
+    private getHexagonGridCoordsFromMouseCoords(mouseX: number, mouseY: number): Position {
+        let nearestGridCoord: Position = { x: 0, y: 0 };
+        let minDistance = Infinity;
+    
+        for (let x = 0; x < this.grid.length; x++) {
+            for (let y = 0; y < this.grid[0].length; y++) {
+                const centerX = this.mx + x * (this.d * Math.sqrt(3)) + (y * 0.5 * (this.d * Math.sqrt(3)));
+                const centerY = this.my + y * (1.5 * this.d);
+    
+                const distance = Math.sqrt((mouseX - centerX) ** 2 + (mouseY - centerY) ** 2);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestGridCoord.x = x;
+                    nearestGridCoord.y = y;
+                }
+            }
+        }
+    
+        return nearestGridCoord;
     }
 
     private handleMouseDown(): void {

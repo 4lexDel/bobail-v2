@@ -33,11 +33,11 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
         game.onCellHover = handleCellHover;
     }, []);
 
-    const handleCellHover = (x: number, _: number) => {
-        // game.editFlagGrid(Array.from({ length: 6 }, (_, i) => ({ x, y: i })), CanvasGame.HOVER);
+    const handleCellHover = (x: number, y: number) => {
+        game.editFlagGrid([{ x, y }], CanvasGame.HOVER);
     }
 
-    const handleCellClick = (x: number, _: number) => {
+    const handleCellClick = (x: number, y: number) => {
         // if (isAlgorithmProcessing || abaloneGame.isGameOver()) return;
         // game.resetFlagGrid();
 
