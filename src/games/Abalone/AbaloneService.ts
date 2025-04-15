@@ -1,4 +1,6 @@
 import { Position } from "../../utils/models";
+import { Cell } from "./AbaloneGame";
+import { Action, State } from "./AbaloneMontecarloImplementation";
 
 export default class AbaloneService {
   private static directions = [
@@ -15,7 +17,7 @@ export default class AbaloneService {
   }
 
   public static isInsideBoard(x: number, y: number, grid: number[][]): boolean {
-    return y >= 0 && y < grid[0].length && x >= 0 && x < grid.length && grid[x][y] !== -1;
+    return y >= 0 && y < grid[0].length && x >= 0 && x < grid.length && grid[x][y] !== -2;
   };
 
   public static getAvailableMoves(grid: number[][], origin: Position): Position[] {
@@ -80,7 +82,7 @@ export default class AbaloneService {
     return null;
   }
 
-  public static applyMove2(grid: number[][], from: Position, to: Position): number[][] {
+  public static applyMove(grid: number[][], from: Position, to: Position): number[][] {
     const deltaX = Math.abs(to.x - from.x);
     const deltaY = Math.abs(to.y - from.y);
 
@@ -112,115 +114,45 @@ export default class AbaloneService {
 
     return newGrid;
   }
+  
+  public static countPlayerPiecesLost(board: number[][]): { player1: number, player2: number } {
+    const piecesLost = { player1: 14, player2: 14 };
 
-  public static applyMove(board: number[][], from: Position, to: Position): number[][] {
-    const player = board[from.x][from.y];
-    if (player !== 1 && player !== 2) return board;
-
-    const dir = AbaloneService.getDirection(from, to);
-    if (!dir) return board; // not adjacent or invalid direction
-
-    const newBoard = AbaloneService.cloneBoard(board);
-
-    // Build moving line (backwards from `from` in reverse direction)
-    const movingLine: Position[] = [from];
-    let bx = from.x - dir.dx;
-    let by = from.y - dir.dy;
-    while (
-      AbaloneService.isInsideBoard(bx, by, board) &&
-      board[bx][by] === player &&
-      movingLine.length < 3
-    ) {
-      movingLine.unshift({ x: bx, y: by });
-      bx -= dir.dx;
-      by -= dir.dy;
-    }
-
-    // Count pushed opponent pieces
-    const opponent = player === 1 ? 2 : 1;
-    const frontX = to.x;
-    const frontY = to.y;
-    const pushLine: Position[] = [];
-
-    let cx = frontX;
-    let cy = frontY;
-    while (AbaloneService.isInsideBoard(cx, cy, board) && board[cx][cy] === opponent) {
-      pushLine.push({ x: cx, y: cy });
-      cx += dir.dx;
-      cy += dir.dy;
-    }
-
-    const finalDest = { x: cx, y: cy };
-    const canPush = (
-      pushLine.length > 0 &&
-      pushLine.length < movingLine.length &&
-      (!AbaloneService.isInsideBoard(finalDest.x, finalDest.y, board) || board[finalDest.x][finalDest.y] === 0)
-    );
-
-    // Apply push if valid
-    if (canPush) {
-      // If the last piece is pushed off the board (void), remove it
-      if (AbaloneService.isInsideBoard(finalDest.x, finalDest.y, board)) {
-        newBoard[finalDest.x][finalDest.y] = opponent;
+    for (let x = 0; x < board.length; x++) {
+      for (let y = 0; y < board[0].length; y++) {
+        if (board[x][y] === 1) piecesLost.player1--;
+        else if (board[x][y] === 2) piecesLost.player2--;
       }
-      // Move the push line forward
-      for (let i = pushLine.length - 1; i >= 0; i--) {
-        const fromPos = pushLine[i];
-        const toPos = {
-          x: fromPos.x + dir.dx,
-          y: fromPos.y + dir.dy
-        };
-        if (AbaloneService.isInsideBoard(toPos.x, toPos.y, board)) {
-          newBoard[toPos.x][toPos.y] = opponent;
-        }
-        newBoard[fromPos.x][fromPos.y] = 0;
-      }
-    }
+    }    
 
-    // If target is empty and no push needed, it's a regular move
-    if (board[to.x][to.y] === 0 || canPush) {
-      // Move the line
-      for (let i = movingLine.length - 1; i >= 0; i--) {
-        const fromPos = movingLine[i];
-        const toPos = {
-          x: fromPos.x + dir.dx,
-          y: fromPos.y + dir.dy
-        };
-        if (AbaloneService.isInsideBoard(toPos.x, toPos.y, board)) {
-          newBoard[toPos.x][toPos.y] = player;
-        }
-        newBoard[fromPos.x][fromPos.y] = 0;
-      }
-    }
-
-    return newBoard;
+    return piecesLost;
   }
-  // public static isGameOver(board: number[][] | Cell[][]) {
-  //   // return (AbaloneService.isGridFull(board) || AbaloneService.checkWin(board, 1) || AbaloneService.checkWin(board, 2));
-  // }
 
-  // public static generateActions(state: State): Action[] {
-  //   // const actions: Action[] = [];
-  //   // for (let col = 0; col < 7; col++) {
-  //   //   if (state.board[col][0] === 0) {
-  //   //     actions.push({ column: col });
-  //   //   }
-  //   // }
-  //   // return actions;
-  // }
+  public static isGameOver(board: number[][]): boolean {
+    const piecesLost = AbaloneService.countPlayerPiecesLost(board);
 
-  // public static applyAction(state: State, action: Action): State {
-  //   // const newBoard = state.board.map(col => [...col]);
+    return (piecesLost.player1 >= 6 || piecesLost.player2 >= 6);
+  }
 
-  //   // if (!action || action.column < 0 || action.column >= 7) return { board: newBoard, player: state.player };
+  public static generateActions(state: State): Action[] {
+    const actions: Action[] = [];
 
-  //   // const column = action.column;
-  //   // for (let row = 5; row >= 0; row--) {
-  //   //   if (newBoard[column][row] === 0) {
-  //   //     newBoard[column][row] = state.player;
-  //   //     break;
-  //   //   }
-  //   // }
-  //   // return { board: newBoard, player: state.player === 1 ? 2 : 1 };
-  // }
+    for (let x = 0; x < state.board.length; x++) {
+      for (let y = 0; y < state.board[0].length; y++) {
+        if (state.board[x][y] === state.player) {
+          const availableMoves = AbaloneService.getAvailableMoves(state.board, { x, y });
+          // Convert the move to action and add it to the current list
+          if (availableMoves.length) actions.push(...availableMoves.map((move) => ({ from: { x, y }, to: move })));
+        }
+      }
+    }
+
+    return actions;
+  }
+
+  public static applyAction(state: State, action: Action): State {
+    const newBoard = AbaloneService.applyMove(state.board, action.from, action.to);
+    
+    return { board: newBoard as Cell[][], player: state.player === 1 ? 2 : 1 };
+  }
 }

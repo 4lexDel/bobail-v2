@@ -8,7 +8,7 @@ import { Action } from '../../games/Abalone/AbaloneMontecarloImplementation';
 import AbaloneService from '../../games/Abalone/AbaloneService';
 
 const createWorker = () => new Worker(
-    new URL('../../workers/connect4.worker.js', import.meta.url),
+    new URL('../../workers/abalone.worker.js', import.meta.url),
     { type: 'module' }
 );
 
@@ -73,7 +73,7 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
     
                 game.editFlagGrid([firstMove, { x, y }], CanvasGame.LAST_MOVE);
     
-                //resetWorker();
+                resetWorker();
                 if (newWorker) {
                     newWorker.onmessage = (event) => {
                         // AI answer
@@ -101,13 +101,17 @@ const AbaloneCanvas = ({ reflexionTime, onAiProcessStart, onAiProcessEnd }: { re
         onAiProcessEnd();
 
         setTimeout(() => {
-            // abaloneGame.movePiece(nextAction.x, nextAction.y);
-            // const grid = abaloneGame.getGrid();
+            abaloneGame.movePiece(nextAction.from, nextAction.to);
+            const grid = abaloneGame.getGrid();
 
-            // updateGameGrid(grid);
-            // // game.editFlagGrid(Array.from({length: 6}, (_, i) => ({x: nextAction.column, y: i})), CanvasGame.LAST_MOVE);
+            updateGameGrid(grid);
+            
+            game.editFlagGrid([
+                { x: nextAction.from.x, y: nextAction.from.y },
+                { x: nextAction.to.x, y: nextAction.to.y }
+            ], CanvasGame.LAST_MOVE);
 
-            // processAiPostMove();
+            processAiPostMove();
         }, 200);
     }
 

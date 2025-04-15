@@ -19,7 +19,9 @@ export class CanvasGameBase {
     public onCellClicked: ((x: number, y: number) => void) | null = null;
     public onCellHover: ((x: number, y: number) => void) | null = null;
 
-    public colorBackground: string = "rgb(120, 120, 120)";
+    public backgroundColor: string = "rgb(120, 120, 120)";
+    public voidColor: string = "rgba(255, 0, 0, 0)";
+
     public pieceHexaColor = [
         "#fd0d34", // red
         "#3c8bda", // neutral blue

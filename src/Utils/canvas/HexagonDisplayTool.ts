@@ -11,12 +11,17 @@ export default class HexagonDisplayTool implements DisplayTool {
     
                 if (value === -1) continue;
 
-                if (this.instance.flagGrid[x][y] !== 0) this.instance.ctx.fillStyle = this.instance.flagHexaColor[this.instance.flagGrid[x][y] - 1].hexaColor;
-                else this.instance.ctx.fillStyle = this.instance.colorBackground;   
+                    if (this.instance.flagGrid[x][y] !== 0) this.instance.ctx.fillStyle = this.instance.flagHexaColor[this.instance.flagGrid[x][y] - 1].hexaColor;
+                    else if (value === -2) {
+                        this.instance.ctx.fillStyle = this.instance.voidColor;
+                    }
+                    else this.instance.ctx.fillStyle = this.instance.backgroundColor;
         
                 const centerX = this.instance.mx + x * (this.instance.d * Math.sqrt(3)) + (y * 0.5 * (this.instance.d * Math.sqrt(3)));
                 const centerY = this.instance.my + y * (1.5 * this.instance.d);
                 this.displayHexagon(centerX, centerY);
+
+                if (value === -2) continue;
                 this.displayPiece(x, y, centerX, centerY);
             }
         }

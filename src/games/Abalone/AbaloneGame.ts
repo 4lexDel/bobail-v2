@@ -1,7 +1,7 @@
 import { Player, Position } from "../../utils/models";
 import AbaloneService from "./AbaloneService";
 
-export type Cell = -1 | 0 | Player;
+export type Cell = -2 | -1 | 0 | Player;
 
 export default class AbaloneGame {
     private grid!: Cell[][];
@@ -21,16 +21,24 @@ export default class AbaloneGame {
     }
 
     private initializeGrid(): void {
+        // -2  => border
+        // -1  => Not a cell (void)
+        // 1  => Player 1
+        // 2  => Player 2
+        // 0  => Empty
+
         this.grid = [
-            [-1, -1, -1, -1, 0, 0, 2, 1, 1], //-1  => Not a cell (void)
-            [-1, -1, -1, 0, 0, 0, 0, 1, 1], // 1  => Player 1
-            [-1, -1, 0, 0, 0, 0, 1, 1, 1], // 2  => Player 2
-            [-1, 2, 0, 0, 0, 0, 1, 1, 1], // 0  => Empty
-            [2, 2, 2, 0, 0, 0, 1, 1, 1],
-            [2, 2, 2, 0, 0, 0, 0, 1, -1],
-            [2, 2, 2, 0, 0, 0, 0, -1, -1],
-            [2, 2, 0, 0, 0, 0, -1, -1, -1],
-            [2, 2, 0, 0, 0, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2],
+            [-1, -1, -1, -1, -2, 0, 0, 0, 1, 1, -2],
+            [-1, -1, -1, -2, 0, 0, 0, 0, 1, 1, -2],
+            [-1, -1, -2, 0, 0, 0, 0, 1, 1, 1, -2],
+            [-1, -2, 2, 0, 0, 0, 0, 1, 1, 1, -2],
+            [-2, 2, 2, 2, 0, 0, 0, 1, 1, 1, -2],
+            [-2, 2, 2, 2, 0, 0, 0, 0, 1, -2, -1],
+            [-2, 2, 2, 2, 0, 0, 0, 0, -2, -1, -1],
+            [-2, 2, 2, 0, 0, 0, 0, -2, -1, -1, -1],
+            [-2, 2, 2, 0, 0, 0, -2, -1, -1, -1, -1],
+            [-2, -2, -2, -2, -2, -2, -1, -1, -1, -1, -1],
         ];
     }
 
@@ -63,7 +71,7 @@ export default class AbaloneGame {
 
         if (!validMoves.some(pos => pos.x === to.x && pos.y === to.y)) return false;
 
-        this.grid = AbaloneService.applyMove2(this.grid, { x: from.x, y: from.y }, { x: to.x, y: to.y }) as Cell[][];
+        this.grid = AbaloneService.applyMove(this.grid, { x: from.x, y: from.y }, { x: to.x, y: to.y }) as Cell[][];
 
         this.checkGameOver();
         this.switchPlayer();        
@@ -76,6 +84,9 @@ export default class AbaloneGame {
     }
 
     public checkGameOver(): void {
-        // logic
+        const piecesLost = AbaloneService.countPlayerPiecesLost(this.grid);
+
+        if (piecesLost.player1 >= 6) this.winner = 2;
+        else if (piecesLost.player2 >= 6) this.winner = 1;
     }
 }

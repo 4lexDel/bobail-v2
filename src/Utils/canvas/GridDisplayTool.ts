@@ -15,7 +15,7 @@ export default class GridDisplayTool implements DisplayTool {
 
     private displayCell(x: number, y: number): void {
         if (this.instance.flagGrid[x][y] !== 0) this.instance.ctx.fillStyle = this.instance.flagHexaColor[this.instance.flagGrid[x][y] - 1].hexaColor;
-        else this.instance.ctx.fillStyle = this.instance.colorBackground;
+        else this.instance.ctx.fillStyle = this.instance.backgroundColor;
 
         this.instance.ctx.fillRect(this.instance.mx + x * this.instance.d, this.instance.my + y * this.instance.d, this.instance.d, this.instance.d);
         this.displayCellBorder(this.instance.mx + x * this.instance.d, this.instance.my + y * this.instance.d, this.instance.d);
